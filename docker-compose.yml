@@ -1,0 +1,57 @@
+version: '3.8'
+
+services:
+  redis-stack: # Renamed for clarity, as it's the full stack
+    image: redis/redis-stack:latest
+    container_name: redis-stack-rag # Consistent naming
+    restart: unless-stopped
+    # No 'command' needed here; let the image's default entrypoint/cmd run.
+    # The redis-stack image handles loading modules and starting Redis.
+    # If you need to pass specific redis-server arguments, it's usually done
+    # by appending them to the default command or using environment variables
+    # if the image supports them for configuration.
+    # For --appendonly yes, this is often a default or can be set via a config file if needed.
+    # For --protected-mode no, this is generally okay for local dev but be cautious.
+    # The stack image might already configure these or similar defaults.
+    ports:
+      - "6379:6379" # For Redis
+      - "8001:8001" # For RedisInsight bundled with redis-stack (optional, if you prefer the separate one)
+    volumes:
+      - redis_stack_data:/data # Renamed volume for clarity
+    networks:
+      - rag_network # Renamed network for clarity
+    healthcheck:
+      test: ["CMD", "redis-cli", "-h", "localhost", "-p", "6379", "ping"] # More explicit host/port
+      interval: 10s
+      timeout: 5s
+      retries: 5 # Increased retries slightly
+
+  redisinsight:
+    image: redis/redisinsight:latest # This is fine if you prefer a separate RedisInsight
+    container_name: redisinsight-rag
+    restart: unless-stopped
+    ports:
+      - "5540:5540" # Using a different port than the bundled RedisInsight (8001)
+    volumes:
+      - redisinsight_data:/db # Changed to /db as per common RedisInsight volume mapping
+    networks:
+      - rag_network
+    depends_on:
+      redis-stack: # Depends on the renamed service
+        condition: service_healthy # Wait for redis-stack to be healthy
+    environment:
+      # For connecting to the redis-stack service within the Docker network:
+      - REDIS_HOSTS=redis-stack-rag # Service name as host
+      # - RI_REDIS_HOST=redis-stack-rag # Old variable name, REDIS_HOSTS is more current
+      # - RI_REDIS_PORT=6379 # Port is usually defaulted if not specified with host
+      # - RI_REDIS_ALIAS=rag_stack_example # Optional alias
+
+volumes:
+  redis_stack_data: # Renamed volume
+    driver: local
+  redisinsight_data:
+    driver: local
+
+networks:
+  rag_network: # Renamed network
+    driver: bridge
