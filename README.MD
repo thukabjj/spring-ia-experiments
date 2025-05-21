@@ -1,6 +1,6 @@
-# Movie Classification AI Demo
+# Spring AI with Ollama 
 
-This project is a Spring Boot application that uses Spring AI and Ollama to classify and process movie records from a CSV file. It exposes REST endpoints for chat and movie classification.
+This project is an experimentation of Spring IA with Ollama using the [Netflix Life Impact Dataset](https://www.kaggle.com/datasets/towhid121/netflix-life-impact-dataset-nlid/data) dataset from Kaggle .
 
 ## Features
 
@@ -15,14 +15,6 @@ This project is a Spring Boot application that uses Spring AI and Ollama to clas
 - Maven 3.8+
 - Ollama (for AI model integration)
 - Redis (if using vector store)
-
-## Endpoints
-
-- `GET /chat`  
-  Simple chat endpoint with a system prompt.
-
-- `POST /classify`  
-  Reads `NLID.csv` from resources, parses movie records, and classifies them using the AI model.
 
 ## Setup
 

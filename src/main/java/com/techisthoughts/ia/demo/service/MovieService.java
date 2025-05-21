@@ -7,11 +7,15 @@ import com.techisthoughts.ia.demo.repository.entity.MovieEntity;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.ai.chat.client.ChatClient;
+import org.springframework.ai.embedding.Embedding;
 import org.springframework.ai.embedding.EmbeddingModel;
+import org.springframework.ai.embedding.EmbeddingRequest;
 import org.springframework.ai.embedding.EmbeddingResponse;
+import org.springframework.ai.ollama.api.OllamaOptions;
 import org.springframework.stereotype.Service;
 
 import java.nio.ByteBuffer;
+import java.nio.ByteOrder;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -23,9 +27,12 @@ public class MovieService {
 
     private final MovieRepository movieRepository;
     private final FileService fileService;
-    private final EntityStream entityStream;
-    private final ChatClient chatClient;
+    private final EntityStream entityStream; // Not used in the provided methods, but kept
+    private final ChatClient chatClient;     // Kept, createSummary method is retained
     private final EmbeddingModel embeddingModel;
+
+    // Define a batch size for embedding requests
+    private static final int EMBEDDING_BATCH_SIZE = 50; // Adjust as needed
 
     public MovieService(
             MovieRepository movieRepository,
@@ -40,64 +47,122 @@ public class MovieService {
         this.embeddingModel = embeddingModel;
     }
 
+    // Helper method to create the text to be embedded from a MovieRecord
+    private String createTextForEmbedding(MovieRecord record) {
+        // Concatenate relevant fields to create a rich text for embedding.
+        // You can adjust the format and fields included.
+        return String.format(
+                "Title: %s. Genre: %s. Release Year: %s. Average Rating: %s. Number of Reviews: %s. Highlights: %s. Insight Minute: %s. Discovered Via: %s. Advice Taken: %s. Suggested to Others: %s (%s%%).",
+                record.movieTitle(),
+                record.genre(),
+                record.releaseYear(),
+                record.averageRating(),
+                record.numberOfReviews(),
+                record.reviewHighlights(),
+                record.minuteOfLifeChangingInsight(),
+                record.howDiscovered(),
+                record.meaningfulAdviceTaken(),
+                record.isSuggestedToFriendsFamily(),
+                record.percentageSuggestedToFriendsFamily()
+        );
+    }
+
     public void loadMovieData(String filePath) {
         LOG.info("Loading movie data from file: {}", filePath);
         List<MovieRecord> records = fileService.readMoviesFromCsv(filePath);
-        List<MovieEntity> entities = new ArrayList<>();
-        records
-                .forEach(record -> {
-                    LOG.info("Generating summary movie title: {}", record.movieTitle());
-                    // String summary = createSummary(record);
-                    String summary = record.movieTitle();
+        if (records.isEmpty()) {
+            LOG.info("No records found in the file: {}", filePath);
+            return;
+        }
 
-                    LOG.info("Generating Embedding for movie title: {}", record.movieTitle());
-                    EmbeddingResponse embeddingResponse = this.embeddingModel.embedForResponse(List.of(summary));
-                    LOG.info("Embedding response for movie title - {}: {}",record.movieTitle(), embeddingResponse);
+        LOG.info("Preparing to process {} movie records for embedding and saving.", records.size());
+        List<MovieEntity> allEntities = new ArrayList<>();
 
-                    float[] vectorValues = embeddingResponse.getResult().getOutput();
-                    LOG.info("Vector Size for movie title - {}: {}",record.movieTitle(), vectorValues.length);
-                    byte[] embeddingBytes = convertToBytes(vectorValues);
-                    LOG.info("Dimension (embedding) size for movie title - {}: {}",record.movieTitle(), embeddingBytes.length);
+        for (int i = 0; i < records.size(); i += EMBEDDING_BATCH_SIZE) {
+            List<MovieRecord> batchRecords = records.subList(i, Math.min(i + EMBEDDING_BATCH_SIZE, records.size()));
+            LOG.info("Processing batch of {} records (from index {} to {})", batchRecords.size(), i, Math.min(i + EMBEDDING_BATCH_SIZE, records.size()) -1);
 
-                    entities.add(new MovieEntity(
-                            record.movieTitle(),
-                            record.genre(),
-                            record.releaseYear(),
-                            record.averageRating(),
-                            record.numberOfReviews(),
-                            record.reviewHighlights(),
-                            record.minuteOfLifeChangingInsight(),
-                            record.howDiscovered(),
-                            record.meaningfulAdviceTaken(),
-                            record.isSuggestedToFriendsFamily(),
-                            record.percentageSuggestedToFriendsFamily(),
-                            summary,
-                            embeddingBytes
-                    ));
-                });
+            List<String> textsToEmbed = batchRecords.stream()
+                    .map(this::createTextForEmbedding)
+                    .collect(Collectors.toList());
 
+            LOG.info("Generating embeddings for batch of {} texts.", textsToEmbed.size());
 
-        LOG.info("Saving {} movies to the repository", entities.size());
-        movieRepository.saveAll(entities);
+            OllamaOptions ollamaOptions = OllamaOptions.builder()
+                    .model("nomic-embed-text")
+                    .build();
+            // Using null for EmbeddingOptions to use defaults
+            EmbeddingRequest embeddingRequest = new EmbeddingRequest(textsToEmbed, ollamaOptions);
+            EmbeddingResponse embeddingResponse = this.embeddingModel.call(embeddingRequest);
+
+            List<Embedding> embeddings = embeddingResponse.getResults();
+            if (embeddings.size() != batchRecords.size()) {
+                LOG.warn("Mismatch in batch size and embeddings received. Expected: {}, Got: {}", batchRecords.size(), embeddings.size());
+                // Handle error or skip this batch if necessary
+                continue;
+            }
+
+            List<MovieEntity> batchEntities = new ArrayList<>();
+            for (int j = 0; j < batchRecords.size(); j++) {
+                MovieRecord record = batchRecords.get(j);
+                String textEmbedded = textsToEmbed.get(j); // The actual text that was embedded
+                float[] vectorValues = embeddings.get(j).getOutput(); // Assuming getOutput() returns float[]
+                byte[] embeddingBytes = convertToBytes(vectorValues);
+
+                LOG.debug("Generated embedding for movie: '{}'. Vector length: {}. Byte array length: {}", record.movieTitle(), vectorValues.length, embeddingBytes.length);
+
+                batchEntities.add(new MovieEntity(
+                        record.movieTitle(),
+                        record.genre(),
+                        record.releaseYear(),
+                        record.averageRating(),
+                        record.numberOfReviews(),
+                        record.reviewHighlights(),
+                        record.minuteOfLifeChangingInsight(),
+                        record.howDiscovered(),
+                        record.meaningfulAdviceTaken(),
+                        record.isSuggestedToFriendsFamily(),
+                        record.percentageSuggestedToFriendsFamily(),
+                        textEmbedded, // Store the text that was actually embedded
+                        embeddingBytes
+                ));
+            }
+            allEntities.addAll(batchEntities);
+        }
+
+        if (!allEntities.isEmpty()) {
+            LOG.info("Saving {} movie entities to the repository.", allEntities.size());
+            movieRepository.saveAll(allEntities);
+            LOG.info("Successfully saved {} movie entities.", allEntities.size());
+        } else {
+            LOG.info("No entities were processed to be saved.");
+        }
     }
 
     private byte[] convertToBytes(float[] vector) {
-        ByteBuffer buffer = ByteBuffer.allocate(vector.length * Float.BYTES);
+        if (vector == null) {
+            return new byte[0];
+        }
+        // Ensure Little Endian byte order for consistency with RediSearch default for FLOAT32 vectors
+        // if it expects that, or match whatever your MovieEntity's @Indexed dimension implies.
+        ByteBuffer buffer = ByteBuffer.allocate(vector.length * Float.BYTES).order(ByteOrder.LITTLE_ENDIAN);
         for (float value : vector) {
             buffer.putFloat(value);
         }
         return buffer.array();
     }
 
-    private String createSummary(MovieRecord record) {
-        // Use the chat model to create a structured summary to be embedded
-
+    // This method is retained if you want to generate summaries for other purposes
+    // or if you decide to embed AI-generated summaries instead of raw field concatenations.
+    private String createSummaryWithChatClient(MovieRecord record) {
+        LOG.info("Creating summary with ChatClient for movie title: {}", record.movieTitle());
         String condensedContent = String.format(
-                "Movie: %s, Genre: %s, Year: %s, Rating: %s, Reviews: %s, Highlights: %s, Insight Minute: %s, Discovered: %s, Advice: %s, Suggested: %s",
+                "Movie: %s, Genre: %s, Year: %s, Rating: %s, Number of Reviews: %s, Highlights: %s, Insight Minute: %s, Discovered: %s, Advice: %s, Suggested: %s (%s%%)",
                 record.movieTitle(),
                 record.genre(),
                 record.releaseYear(),
                 record.averageRating(),
+                record.numberOfReviews(),
                 record.reviewHighlights(),
                 record.minuteOfLifeChangingInsight(),
                 record.howDiscovered(),
@@ -107,7 +172,7 @@ public class MovieService {
         );
 
         String prompt = String.format(
-                "Summarize the following movie data as a JSON object with fields: title, genre, year, rating, reviews, highlights, insightMinute, discovered, advice, suggested. Data: %s",
+                "Summarize the following movie data concisely. Data: %s",
                 condensedContent
         );
         return chatClient

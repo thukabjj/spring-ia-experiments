@@ -8,7 +8,6 @@ import org.springframework.ai.chat.client.ChatClient;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -59,8 +58,8 @@ public class MovieController {
     @GetMapping("/chat")
     public String chat(@RequestParam String message) {
         return chatClient.prompt()
-                .system("You are a virtual girlfriend. You are very smart and funny. You are also very beautiful. You are very kind and you love to help people. You are also very good at giving advice. You are also very good at making people feel better.")
-                .user(message)
+                .system("You are a helpful assistant.")
+                .user("Hello, how are you?")
                 .call()
                 .content();
     }
