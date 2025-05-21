@@ -4,7 +4,6 @@ import com.techisthoughts.ia.demo.controller.MovieRecord;
 import io.deephaven.csv.CsvSpecs;
 import io.deephaven.csv.reading.CsvReader;
 import io.deephaven.csv.sinks.SinkFactory;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
@@ -18,7 +17,6 @@ import java.util.List;
 import java.util.Map;
 
 @Service
-
 public class FileService {
 
     private static final Logger LOG = LoggerFactory.getLogger(FileService.class);
@@ -90,11 +88,23 @@ public class FileService {
                     String releaseYear = getStringValue(columnsByName.get(COL_RELEASE_YEAR), i);
                     String averageRating = getStringValue(columnsByName.get(COL_AVERAGE_RATING), i);
                     String numberOfReviews = getStringValue(columnsByName.get(COL_NUMBER_OF_REVIEWS), i);
-                    String reviewHighlights = getStringValue(columnsByName.get(COL_REVIEW_HIGHLIGHTS), i);
+                    List<String> reviewHighlights = splitReviewHighlights(getStringValue(columnsByName.get(COL_REVIEW_HIGHLIGHTS), i));
                     String minuteOfInsight = getStringValue(columnsByName.get(COL_MINUTE_OF_LIFE_CHANGING_INSIGHT), i);
                     String howDiscovered = getStringValue(columnsByName.get(COL_HOW_DISCOVERED), i);
                     String adviceTaken = getStringValue(columnsByName.get(COL_MEANINGFUL_ADVICE_TAKEN), i);
-                    String suggested = getStringValue(columnsByName.get(COL_SUGGESTED_TO_FRIENDS_FAMILY), i);
+                    String suggestedToFriendsFamily = getStringValue(columnsByName.get(COL_SUGGESTED_TO_FRIENDS_FAMILY), i);
+                    String isSuggestedToFriendsFamily = "";
+                    String percentageSuggestedToFriendsFamily = "";
+                    if (suggestedToFriendsFamily != null && !suggestedToFriendsFamily.isEmpty()) {
+                        String[] parts = suggestedToFriendsFamily.trim().split("\\s+");
+                        if (parts.length == 2) {
+                            percentageSuggestedToFriendsFamily = parts[0];
+                            isSuggestedToFriendsFamily = parts[1];
+                        } else if (parts.length == 1) {
+                            // Fallback: if only one part, assume it's the percentage
+                            percentageSuggestedToFriendsFamily = parts[0];
+                        }
+                    }
 
                     movieRecords.add(new MovieRecord(
                             movieTitle,
@@ -106,7 +116,8 @@ public class FileService {
                             minuteOfInsight,
                             howDiscovered,
                             adviceTaken,
-                            suggested
+                            isSuggestedToFriendsFamily,
+                            percentageSuggestedToFriendsFamily
                     ));
                 } catch (Exception e) {
                     LOG.error("Error processing row {} from CSV file {}: {}", i, filePath, e.getMessage(), e);
@@ -121,11 +132,27 @@ public class FileService {
     }
 
     /**
+     * Splits the review highlights string into an array, separating by ' / ' and trimming quotes and whitespace.
+     * Example: "\"Will Smith’s struggle hit hard. A must-watch!\" / \"Overly sentimental but inspiring.\""
+     * becomes: ["Will Smith’s struggle hit hard. A must-watch!", "Overly sentimental but inspiring."]
+     */
+  private List<String> splitReviewHighlights(String highlights) {
+      if (highlights == null || highlights.isEmpty()) return List.of();
+      // Remove leading/trailing quotes, then split, then trim quotes from each part
+      String[] parts = highlights.split("\\s*/\\s*");
+      List<String> result = new ArrayList<>();
+      for (String part : parts) {
+          result.add(part.replaceAll("^\"+|\"+$", "").trim());
+      }
+      return result;
+  }
+
+    /**
      * Helper method to safely get a String value from a ResultColumn's data array for a given row index.
      * Handles common inferred types like String[], int[], double[], long[], float[], boolean[]
      * and converts them to String.
      *
-     * @param column The CsvReader.ResultColumn.
+     * @param column   The CsvReader.ResultColumn.
      * @param rowIndex The row index.
      * @return The string value, or an empty string if null, out of bounds, or type not handled.
      */
@@ -176,8 +203,7 @@ public class FileService {
                 if (rowIndex < dataArray.length && dataArray[rowIndex] != null) {
                     value = String.valueOf(dataArray[rowIndex]);
                 }
-            }
-            else {
+            } else {
                 // This case might occur if deephaven-csv uses a different array type not yet handled
                 // or if the column was empty and resulted in an unexpected data() type.
                 LOG.warn("Unhandled data array type for column '{}': {}. Attempting String.valueOf().",

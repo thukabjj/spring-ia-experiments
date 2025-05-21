@@ -12,7 +12,9 @@ import org.springframework.ai.embedding.EmbeddingResponse;
 import org.springframework.stereotype.Service;
 
 import java.nio.ByteBuffer;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 public class MovieService {
@@ -40,32 +42,43 @@ public class MovieService {
 
     public void loadMovieData(String filePath) {
         LOG.info("Loading movie data from file: {}", filePath);
-        fileService.readMoviesFromCsv(filePath)
+        List<MovieRecord> records = fileService.readMoviesFromCsv(filePath);
+        List<MovieEntity> entities = new ArrayList<>();
+        records
                 .forEach(record -> {
-                    String summary = createSummary(record);
+                    LOG.info("Generating summary movie title: {}", record.movieTitle());
+                    // String summary = createSummary(record);
+                    String summary = record.movieTitle();
 
-                    // Generate embedding using Spring AI's EmbeddingClient
+                    LOG.info("Generating Embedding for movie title: {}", record.movieTitle());
                     EmbeddingResponse embeddingResponse = this.embeddingModel.embedForResponse(List.of(summary));
+                    LOG.info("Embedding response for movie title - {}: {}",record.movieTitle(), embeddingResponse);
+
                     float[] vectorValues = embeddingResponse.getResult().getOutput();
-
-                    // Convert to bytes if needed for your MovieEntity
+                    LOG.info("Vector Size for movie title - {}: {}",record.movieTitle(), vectorValues.length);
                     byte[] embeddingBytes = convertToBytes(vectorValues);
+                    LOG.info("Dimension (embedding) size for movie title - {}: {}",record.movieTitle(), embeddingBytes.length);
 
-                    MovieEntity movieEntity = new MovieEntity(
+                    entities.add(new MovieEntity(
                             record.movieTitle(),
                             record.genre(),
                             record.releaseYear(),
                             record.averageRating(),
+                            record.numberOfReviews(),
                             record.reviewHighlights(),
                             record.minuteOfLifeChangingInsight(),
                             record.howDiscovered(),
                             record.meaningfulAdviceTaken(),
-                            record.suggestedToFriendsFamily(),
+                            record.isSuggestedToFriendsFamily(),
+                            record.percentageSuggestedToFriendsFamily(),
                             summary,
                             embeddingBytes
-                    );
-                    movieRepository.save(movieEntity);
+                    ));
                 });
+
+
+        LOG.info("Saving {} movies to the repository", entities.size());
+        movieRepository.saveAll(entities);
     }
 
     private byte[] convertToBytes(float[] vector) {
@@ -85,12 +98,12 @@ public class MovieService {
                 record.genre(),
                 record.releaseYear(),
                 record.averageRating(),
-                record.numberOfReviews(),
                 record.reviewHighlights(),
                 record.minuteOfLifeChangingInsight(),
                 record.howDiscovered(),
                 record.meaningfulAdviceTaken(),
-                record.suggestedToFriendsFamily()
+                record.isSuggestedToFriendsFamily(),
+                record.percentageSuggestedToFriendsFamily()
         );
 
         String prompt = String.format(
@@ -104,4 +117,22 @@ public class MovieService {
     }
 
 
+    public List<MovieRecord> getAllMovies() {
+        LOG.info("Fetching all movies");
+        return movieRepository.findAll().stream().map(
+                movieEntity -> new MovieRecord(
+                        movieEntity.movieTitle(),
+                        movieEntity.genre(),
+                        movieEntity.releaseYear(),
+                        movieEntity.averageRating(),
+                        movieEntity.numberOfReviews(),
+                        movieEntity.reviewHighlights(),
+                        movieEntity.minuteOfLifeChangingInsight(),
+                        movieEntity.howDiscovered(),
+                        movieEntity.meaningfulAdviceTaken(),
+                        movieEntity.isSuggestedToFriendsFamily(),
+                        movieEntity.percentageSuggestedToFriendsFamily()
+                )
+        ).collect(Collectors.toList());
+    }
 }
