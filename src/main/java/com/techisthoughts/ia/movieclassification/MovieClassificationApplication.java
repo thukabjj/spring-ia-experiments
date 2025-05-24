@@ -1,7 +1,7 @@
-package com.techisthoughts.ia.demo;
+package com.techisthoughts.ia.movieclassification;
 
 import com.redis.om.spring.annotations.EnableRedisDocumentRepositories;
-import com.techisthoughts.ia.demo.service.MovieService;
+import com.techisthoughts.ia.movieclassification.service.MovieService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.boot.CommandLineRunner;
@@ -10,13 +10,13 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.Bean;
 
 @SpringBootApplication
-@EnableRedisDocumentRepositories(basePackages = "com.techisthoughts.ia.demo.repository")
-public class DemoApplication {
+@EnableRedisDocumentRepositories(basePackages = "com.techisthoughts.ia.movieclassification.repository")
+public class MovieClassificationApplication {
 
-    private final Logger LOG = LoggerFactory.getLogger(DemoApplication.class);
+    private final Logger LOG = LoggerFactory.getLogger(MovieClassificationApplication.class);
 
     public static void main(String[] args) {
-        SpringApplication.run(DemoApplication.class, args);
+        SpringApplication.run(MovieClassificationApplication.class, args);
     }
 
     @Bean
@@ -29,6 +29,4 @@ public class DemoApplication {
             LOG.info("Application started successfully!");
         };
     }
-
-
 }

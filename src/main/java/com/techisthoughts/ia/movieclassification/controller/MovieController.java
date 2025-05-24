@@ -1,7 +1,7 @@
-package com.techisthoughts.ia.demo.controller;
+package com.techisthoughts.ia.movieclassification.controller;
 
 
-import com.techisthoughts.ia.demo.service.MovieService;
+import com.techisthoughts.ia.movieclassification.service.MovieService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.ai.chat.client.ChatClient;

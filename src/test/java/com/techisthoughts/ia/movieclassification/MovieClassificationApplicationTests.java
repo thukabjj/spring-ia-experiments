@@ -1,10 +1,10 @@
-package com.techisthoughts.ia.demo;
+package com.techisthoughts.ia.movieclassification;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
 
 @SpringBootTest
-class DemoApplicationTests {
+class MovieClassificationApplicationTests {
 
 	@Test
 	void contextLoads() {

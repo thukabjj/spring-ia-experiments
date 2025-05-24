@@ -1,57 +1,110 @@
 version: '3.8'
 
 services:
-  redis-stack: # Renamed for clarity, as it's the full stack
+  # Redis Stack
+  redis-stack:
     image: redis/redis-stack:latest
-    container_name: redis-stack-rag # Consistent naming
-    restart: unless-stopped
-    # No 'command' needed here; let the image's default entrypoint/cmd run.
-    # The redis-stack image handles loading modules and starting Redis.
-    # If you need to pass specific redis-server arguments, it's usually done
-    # by appending them to the default command or using environment variables
-    # if the image supports them for configuration.
-    # For --appendonly yes, this is often a default or can be set via a config file if needed.
-    # For --protected-mode no, this is generally okay for local dev but be cautious.
-    # The stack image might already configure these or similar defaults.
-    ports:
-      - "6379:6379" # For Redis
-      - "8001:8001" # For RedisInsight bundled with redis-stack (optional, if you prefer the separate one)
-    volumes:
-      - redis_stack_data:/data # Renamed volume for clarity
-    networks:
-      - rag_network # Renamed network for clarity
-    healthcheck:
-      test: ["CMD", "redis-cli", "-h", "localhost", "-p", "6379", "ping"] # More explicit host/port
-      interval: 10s
-      timeout: 5s
-      retries: 5 # Increased retries slightly
-
-  redisinsight:
-    image: redis/redisinsight:latest # This is fine if you prefer a separate RedisInsight
-    container_name: redisinsight-rag
+    container_name: redis-stack-rag
     restart: unless-stopped
     ports:
-      - "5540:5540" # Using a different port than the bundled RedisInsight (8001)
+      - "6379:6379"  # For Redis
+      - "8001:8001"  # For RedisInsight bundled with redis-stack
     volumes:
-      - redisinsight_data:/db # Changed to /db as per common RedisInsight volume mapping
+      - redis_stack_data:/data
     networks:
       - rag_network
-    depends_on:
-      redis-stack: # Depends on the renamed service
-        condition: service_healthy # Wait for redis-stack to be healthy
+    healthcheck:
+      test: ["CMD", "redis-cli", "-h", "localhost", "-p", "6379", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+
+  # LGTM Stack Components
+  prometheus:
+    image: prom/prometheus:latest
+    container_name: prometheus
+    command:
+      - --config.file=/etc/prometheus/prometheus.yml
+      - --storage.tsdb.path=/prometheus
+      - --web.console.libraries=/etc/prometheus/console_libraries
+      - --web.console.templates=/etc/prometheus/consoles
+      - --web.enable-lifecycle
+    ports:
+      - "9090:9090"
+    volumes:
+      - ./infra/prometheus/:/etc/prometheus/
+      - prometheus_data:/prometheus
+    networks:
+      - monitoring_network
+    restart: unless-stopped
+
+  loki:
+    image: grafana/loki:latest
+    container_name: loki
+    ports:
+      - "3100:3100"
+    command: -config.file=/etc/loki/local-config.yaml
+    volumes:
+      - ./infra/loki/:/etc/loki/
+      - loki_data:/loki
+    networks:
+      - monitoring_network
+    restart: unless-stopped
+
+  tempo:
+    image: grafana/tempo:latest
+    container_name: tempo
+    command: -config.file=/etc/tempo/tempo-local.yaml
+    ports:
+      - "3200:3200"  # tempo
+      - "4317:4317"  # otlp grpc
+      - "4318:4318"  # otlp http
+    volumes:
+      - ./infra/tempo/:/etc/tempo/
+      - tempo_data:/tmp/tempo
+    networks:
+      - monitoring_network
+    restart: unless-stopped
+    user: "0:0"  # Run as root user to avoid permission issues
+
+  grafana:
+    image: grafana/grafana:latest
+    container_name: grafana
+    ports:
+      - "3000:3000"
+    volumes:
+      - ./infra/grafana/provisioning:/etc/grafana/provisioning
+      - grafana_data:/var/lib/grafana
     environment:
-      # For connecting to the redis-stack service within the Docker network:
-      - REDIS_HOSTS=redis-stack-rag # Service name as host
-      # - RI_REDIS_HOST=redis-stack-rag # Old variable name, REDIS_HOSTS is more current
-      # - RI_REDIS_PORT=6379 # Port is usually defaulted if not specified with host
-      # - RI_REDIS_ALIAS=rag_stack_example # Optional alias
+      - GF_SECURITY_ADMIN_USER=admin
+      - GF_SECURITY_ADMIN_PASSWORD=admin
+      - GF_USERS_ALLOW_SIGN_UP=false
+    networks:
+      - monitoring_network
+      - rag_network  # Connect to both networks to access Redis metrics
+    depends_on:
+      - prometheus
+      - loki
+      - tempo
+    restart: unless-stopped
 
 volumes:
-  redis_stack_data: # Renamed volume
+  # Redis volumes
+  redis_stack_data:
     driver: local
-  redisinsight_data:
+  # LGTM stack volumes
+  prometheus_data:
+    driver: local
+  loki_data:
+    driver: local
+  tempo_data:
+    driver: local
+  grafana_data:
     driver: local
 
 networks:
-  rag_network: # Renamed network
+  rag_network:
+    driver: bridge
+  monitoring_network:
     driver: bridge

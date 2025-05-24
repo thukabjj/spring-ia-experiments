@@ -1,4 +1,4 @@
-package com.techisthoughts.ia.demo.llm;
+package com.techisthoughts.ia.movieclassification.llm;
 
 import org.springframework.ai.chat.client.ChatClient;
 import org.springframework.context.annotation.Bean;

@@ -1,6 +1,6 @@
-package com.techisthoughts.ia.demo.service;
+package com.techisthoughts.ia.movieclassification.service;
 
-import com.techisthoughts.ia.demo.controller.MovieRecord;
+import com.techisthoughts.ia.movieclassification.controller.MovieRecord;
 import io.deephaven.csv.CsvSpecs;
 import io.deephaven.csv.reading.CsvReader;
 import io.deephaven.csv.sinks.SinkFactory;

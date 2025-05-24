@@ -1,9 +1,9 @@
-package com.techisthoughts.ia.demo.service;
+package com.techisthoughts.ia.movieclassification.service;
 
 import com.redis.om.spring.search.stream.EntityStream;
-import com.techisthoughts.ia.demo.controller.MovieRecord;
-import com.techisthoughts.ia.demo.repository.MovieRepository;
-import com.techisthoughts.ia.demo.repository.entity.MovieEntity;
+import com.techisthoughts.ia.movieclassification.controller.MovieRecord;
+import com.techisthoughts.ia.movieclassification.repository.MovieRepository;
+import com.techisthoughts.ia.movieclassification.repository.entity.MovieEntity;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.ai.chat.client.ChatClient;

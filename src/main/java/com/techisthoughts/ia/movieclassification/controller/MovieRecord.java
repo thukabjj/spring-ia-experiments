@@ -1,4 +1,4 @@
-package com.techisthoughts.ia.demo.controller;
+package com.techisthoughts.ia.movieclassification.controller;
 
 import java.util.List;
 

@@ -1,4 +1,4 @@
-# Spring AI with Ollama 
+# Spring AI with Ollama
 
 This project is an experimentation of Spring IA with Ollama using the [Netflix Life Impact Dataset](https://www.kaggle.com/datasets/towhid121/netflix-life-impact-dataset-nlid/data) dataset from Kaggle .
 
@@ -15,22 +15,33 @@ This project is an experimentation of Spring IA with Ollama using the [Netflix L
 - Maven 3.8+
 - Ollama (for AI model integration)
 - Redis (if using vector store)
+- Docker
 
 ## Setup
 
-1. Clone the repository.
-2. Place your `NLID.csv` file in `src/main/resources/`.
-3. Build the project:
-   ```bash
-   mvn clean install
-   ```
-4. Run the application:
-   ```bash
-   mvn spring-boot:run
-   ```
+1. Run containers
 
-## Configuration
+```bash
+ docker compose up
+```
 
-Dependencies and versions are managed in `pom.xml`.  
-Spring AI and Ollama integration is handled via the provided starters.
+2. Build the project:
 
+```bash
+    mvn clean install
+```
+
+3. Run the application:
+
+```bash
+    mvn spring-boot:run
+```
+
+## Access the services
+
+Grafana: <http://localhost:3000> (admin/admin)
+Prometheus: <http://localhost:9090>
+Loki: <http://localhost:3100>
+Tempo: <http://localhost:3200>
+Redis: <http://localhost:6379>
+RedisInsight (bundled): <http://localhost:8001>
