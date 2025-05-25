@@ -22,6 +22,8 @@
         <spring-ai.version>1.0.0-RC1</spring-ai.version>
         <deephaven-csv.version>0.15.0</deephaven-csv.version>
         <redis-om.version>0.9.11</redis-om.version>
+        <opencsv.version>5.9</opencsv.version>
+        <mapstruct.version>1.6.3</mapstruct.version>
     </properties>
 
     <dependencyManagement>
@@ -66,11 +68,16 @@
         </dependency>
 
         <!-- Project dependencies -->
-        <!--   Data Processing    -->
         <dependency>
-            <groupId>io.deephaven</groupId>
-            <artifactId>deephaven-csv</artifactId>
-            <version>${deephaven-csv.version}</version>
+            <groupId>com.opencsv</groupId>
+            <artifactId>opencsv</artifactId>
+            <version>${opencsv.version}</version>
+        </dependency>
+
+        <dependency>
+            <groupId>org.mapstruct</groupId>
+            <artifactId>mapstruct</artifactId>
+            <version>${mapstruct.version}</version>
         </dependency>
 
         <dependency>
@@ -126,8 +133,16 @@
                             <artifactId>spring-boot-configuration-processor</artifactId>
                         </path>
                         <path>
+                            <groupId>org.mapstruct</groupId>
+                            <artifactId>mapstruct-processor</artifactId>
+                        </path>
+                        <path>
                             <groupId>org.projectlombok</groupId>
                             <artifactId>lombok</artifactId>
+                        </path>
+                        <path>
+                            <groupId>org.projectlombok</groupId>
+                            <artifactId>lombok-mapstruct-binding</artifactId>
                         </path>
                     </annotationProcessorPaths>
                 </configuration>

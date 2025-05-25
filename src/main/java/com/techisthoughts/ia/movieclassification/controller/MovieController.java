@@ -32,10 +32,10 @@ public class MovieController {
     }
 
     @GetMapping("/movies")
-    public ResponseEntity<Map<String, List<MovieRecord>>> getMovies() {
+    public ResponseEntity<Map<String, List<MovieResponse>>> getMovies() {
         LOG.info("Fetching movies");
         var movies =  movieService.getAllMovies().stream().map(
-                movie -> new MovieRecord(
+                movie -> new MovieResponse(
                         movie.movieTitle(),
                         movie.genre(),
                         movie.releaseYear(),
@@ -49,7 +49,7 @@ public class MovieController {
                         movie.percentageSuggestedToFriendsFamily()
                 )
         ).collect(Collectors.toList());
-        Map<String, List<MovieRecord>> response = new HashMap<>();
+        Map<String, List<MovieResponse>> response = new HashMap<>();
         response.put("data", movies);
         LOG.info("Fetched {} movies", movies.size());
         return new ResponseEntity<>(response, HttpStatus.OK);

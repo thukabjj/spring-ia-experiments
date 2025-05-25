@@ -84,6 +84,7 @@ services:
       - monitoring_network
       - rag_network  # Connect to both networks to access Redis metrics
     depends_on:
+      - redis-stack
       - prometheus
       - loki
       - tempo

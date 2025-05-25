@@ -2,7 +2,7 @@ package com.techisthoughts.ia.movieclassification.controller;
 
 import java.util.List;
 
-public record MovieRecord(
+public record MovieResponse(
         String movieTitle,
         String genre,
         String releaseYear,

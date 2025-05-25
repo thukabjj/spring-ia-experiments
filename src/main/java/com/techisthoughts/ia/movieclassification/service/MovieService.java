@@ -1,7 +1,7 @@
 package com.techisthoughts.ia.movieclassification.service;
 
 import com.redis.om.spring.search.stream.EntityStream;
-import com.techisthoughts.ia.movieclassification.controller.MovieRecord;
+import com.techisthoughts.ia.movieclassification.controller.MovieResponse;
 import com.techisthoughts.ia.movieclassification.repository.MovieRepository;
 import com.techisthoughts.ia.movieclassification.repository.entity.MovieEntity;
 import org.slf4j.Logger;
@@ -47,8 +47,8 @@ public class MovieService {
         this.embeddingModel = embeddingModel;
     }
 
-    // Helper method to create the text to be embedded from a MovieRecord
-    private String createTextForEmbedding(MovieRecord record) {
+    // Helper method to create the text to be embedded from a Movie
+    private String createTextForEmbedding(Movie record) {
         // Concatenate relevant fields to create a rich text for embedding.
         // You can adjust the format and fields included.
         return String.format(
@@ -69,7 +69,7 @@ public class MovieService {
 
     public void loadMovieData(String filePath) {
         LOG.info("Loading movie data from file: {}", filePath);
-        List<MovieRecord> records = fileService.readMoviesFromCsv(filePath);
+        List<Movie> records = fileService.readMoviesFromCsv(filePath);
         if (records.isEmpty()) {
             LOG.info("No records found in the file: {}", filePath);
             return;
@@ -79,7 +79,7 @@ public class MovieService {
         List<MovieEntity> allEntities = new ArrayList<>();
 
         for (int i = 0; i < records.size(); i += EMBEDDING_BATCH_SIZE) {
-            List<MovieRecord> batchRecords = records.subList(i, Math.min(i + EMBEDDING_BATCH_SIZE, records.size()));
+            List<Movie> batchRecords = records.subList(i, Math.min(i + EMBEDDING_BATCH_SIZE, records.size()));
             LOG.info("Processing batch of {} records (from index {} to {})", batchRecords.size(), i, Math.min(i + EMBEDDING_BATCH_SIZE, records.size()) -1);
 
             List<String> textsToEmbed = batchRecords.stream()
@@ -104,7 +104,7 @@ public class MovieService {
 
             List<MovieEntity> batchEntities = new ArrayList<>();
             for (int j = 0; j < batchRecords.size(); j++) {
-                MovieRecord record = batchRecords.get(j);
+                Movie record = batchRecords.get(j);
                 String textEmbedded = textsToEmbed.get(j); // The actual text that was embedded
                 float[] vectorValues = embeddings.get(j).getOutput(); // Assuming getOutput() returns float[]
                 byte[] embeddingBytes = convertToBytes(vectorValues);
@@ -123,7 +123,7 @@ public class MovieService {
                         record.meaningfulAdviceTaken(),
                         record.isSuggestedToFriendsFamily(),
                         record.percentageSuggestedToFriendsFamily(),
-                        textEmbedded, // Store the text that was actually embedded
+                        textEmbedded,
                         embeddingBytes
                 ));
             }
@@ -143,8 +143,7 @@ public class MovieService {
         if (vector == null) {
             return new byte[0];
         }
-        // Ensure Little Endian byte order for consistency with RediSearch default for FLOAT32 vectors
-        // if it expects that, or match whatever your MovieEntity's @Indexed dimension implies.
+
         ByteBuffer buffer = ByteBuffer.allocate(vector.length * Float.BYTES).order(ByteOrder.LITTLE_ENDIAN);
         for (float value : vector) {
             buffer.putFloat(value);
@@ -152,40 +151,11 @@ public class MovieService {
         return buffer.array();
     }
 
-    // This method is retained if you want to generate summaries for other purposes
-    // or if you decide to embed AI-generated summaries instead of raw field concatenations.
-    private String createSummaryWithChatClient(MovieRecord record) {
-        LOG.info("Creating summary with ChatClient for movie title: {}", record.movieTitle());
-        String condensedContent = String.format(
-                "Movie: %s, Genre: %s, Year: %s, Rating: %s, Number of Reviews: %s, Highlights: %s, Insight Minute: %s, Discovered: %s, Advice: %s, Suggested: %s (%s%%)",
-                record.movieTitle(),
-                record.genre(),
-                record.releaseYear(),
-                record.averageRating(),
-                record.numberOfReviews(),
-                record.reviewHighlights(),
-                record.minuteOfLifeChangingInsight(),
-                record.howDiscovered(),
-                record.meaningfulAdviceTaken(),
-                record.isSuggestedToFriendsFamily(),
-                record.percentageSuggestedToFriendsFamily()
-        );
 
-        String prompt = String.format(
-                "Summarize the following movie data concisely. Data: %s",
-                condensedContent
-        );
-        return chatClient
-                .prompt(prompt)
-                .call()
-                .content();
-    }
-
-
-    public List<MovieRecord> getAllMovies() {
+    public List<MovieResponse> getAllMovies() {
         LOG.info("Fetching all movies");
         return movieRepository.findAll().stream().map(
-                movieEntity -> new MovieRecord(
+                movieEntity -> new MovieResponse(
                         movieEntity.movieTitle(),
                         movieEntity.genre(),
                         movieEntity.releaseYear(),
