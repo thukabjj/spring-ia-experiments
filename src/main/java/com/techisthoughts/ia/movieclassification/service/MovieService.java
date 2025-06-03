@@ -78,11 +78,11 @@ public class MovieService {
     public List<MovieSearchResponse> search(byte[] embedding) {
         LOG.info("Received utterance: {}", embedding);
         SearchStream<MovieEntity> stream = entityStream.of(MovieEntity.class);
-        List<Pair<MovieEntity, Double>> textsAndScores = stream
-                .filter(MovieEntity$.EMBEDDED_TEXT.knn(3, embedding))
-                .sorted(MovieEntity$._EMBEDDED_TEXT_SCORE)
-                .map(Fields.of(MovieEntity$._THIS, MovieEntity$._EMBEDDED_TEXT_SCORE))
-                .collect(Collectors.toList());
+        List<Pair<MovieEntity, Double>> textsAndScores =
+                stream.filter(MovieEntity$.EMBEDDED_TEXT.knn(3, embedding))
+                        .sorted(MovieEntity$._EMBEDDED_TEXT_SCORE)
+                        .map(Fields.of(MovieEntity$._THIS, MovieEntity$._EMBEDDED_TEXT_SCORE))
+                        .collect(Collectors.toList());
 
         return textsAndScores.stream()
                 .map(pair -> new MovieSearchResponse(pair.getFirst().text(), pair.getSecond()))
