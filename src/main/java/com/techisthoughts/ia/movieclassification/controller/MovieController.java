@@ -54,6 +54,7 @@ public class MovieController {
         LOG.info("Fetched {} movies", movies.size());
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
+    
 
     @GetMapping("/chat")
     public String chat(@RequestParam String message) {

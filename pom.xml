@@ -21,7 +21,7 @@
         <java.version>21</java.version>
         <spring-ai.version>1.0.0-RC1</spring-ai.version>
         <deephaven-csv.version>0.15.0</deephaven-csv.version>
-        <redis-om.version>0.9.11</redis-om.version>
+        <redis-om.version>1.0.0-RC3</redis-om.version>
         <opencsv.version>5.9</opencsv.version>
         <mapstruct.version>1.6.3</mapstruct.version>
     </properties>
@@ -135,6 +135,7 @@
                         <path>
                             <groupId>org.mapstruct</groupId>
                             <artifactId>mapstruct-processor</artifactId>
+                            <version>${mapstruct.version}</version>
                         </path>
                         <path>
                             <groupId>org.projectlombok</groupId>
@@ -143,6 +144,7 @@
                         <path>
                             <groupId>org.projectlombok</groupId>
                             <artifactId>lombok-mapstruct-binding</artifactId>
+                            <version>0.2.0</version>
                         </path>
                     </annotationProcessorPaths>
                 </configuration>
