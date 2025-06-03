@@ -14,6 +14,8 @@ import com.techisthoughts.ia.movieclassification.controller.MovieResponse;
 import com.techisthoughts.ia.movieclassification.controller.MovieSearchResponse;
 import com.techisthoughts.ia.movieclassification.repository.MovieRepository;
 import com.techisthoughts.ia.movieclassification.repository.entity.MovieEntity;
+import com.techisthoughts.ia.movieclassification.repository.entity.MovieEntity$;
+
 
 @Service
 public class MovieService {
@@ -67,12 +69,12 @@ public class MovieService {
     }
 
     private MovieResponse toMovieResponse(MovieEntity movieEntity) {
-        return new MovieResponse(movieEntity.movieTitle(), movieEntity.genre(),
-                movieEntity.releaseYear(), movieEntity.averageRating(),
-                movieEntity.numberOfReviews(), movieEntity.reviewHighlights(),
-                movieEntity.minuteOfLifeChangingInsight(), movieEntity.howDiscovered(),
-                movieEntity.meaningfulAdviceTaken(), movieEntity.isSuggestedToFriendsFamily(),
-                movieEntity.percentageSuggestedToFriendsFamily());
+        return new MovieResponse(movieEntity.getMovieTitle(), movieEntity.getGenre(),
+                movieEntity.getReleaseYear(), movieEntity.getAverageRating(),
+                movieEntity.getNumberOfReviews(), movieEntity.getReviewHighlights(),
+                movieEntity.getMinuteOfLifeChangingInsight(), movieEntity.getHowDiscovered(),
+                movieEntity.getMeaningfulAdviceTaken(), movieEntity.getIsSuggestedToFriendsFamily(),
+                movieEntity.getPercentageSuggestedToFriendsFamily());
     }
 
     public List<MovieSearchResponse> search(byte[] embedding) {
@@ -85,7 +87,7 @@ public class MovieService {
                         .collect(Collectors.toList());
 
         return textsAndScores.stream()
-                .map(pair -> new MovieSearchResponse(pair.getFirst().text(), pair.getSecond()))
+                .map(pair -> new MovieSearchResponse(pair.getFirst().getText(), pair.getSecond()))
                 .toList();
     }
 }

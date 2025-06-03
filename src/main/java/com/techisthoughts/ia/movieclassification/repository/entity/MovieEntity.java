@@ -1,27 +1,60 @@
 package com.techisthoughts.ia.movieclassification.repository.entity;
 
+import java.util.List;
+import org.springframework.data.annotation.Id;
+import org.springframework.lang.NonNull;
 import com.redis.om.spring.annotations.Document;
 import com.redis.om.spring.annotations.Indexed;
 import com.redis.om.spring.annotations.SchemaFieldType;
 import com.redis.om.spring.annotations.Searchable;
 import com.redis.om.spring.indexing.DistanceMetric;
 import com.redis.om.spring.indexing.VectorType;
-import org.springframework.data.annotation.Id;
-import org.springframework.lang.NonNull;
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 import redis.clients.jedis.search.schemafields.VectorField;
 
-import java.util.List;
 
 
+
+@Data
+@NoArgsConstructor
+@AllArgsConstructor
 @Document
-public record MovieEntity(@Id @Searchable String movieTitle, @Indexed @Searchable String genre,
-                          @Indexed String releaseYear, @Indexed String averageRating, @Indexed String numberOfReviews,
-                          @Indexed @Searchable List<String> reviewHighlights,
-                          @Indexed String minuteOfLifeChangingInsight, @Indexed String howDiscovered,
-                          @Indexed String meaningfulAdviceTaken, @Indexed String isSuggestedToFriendsFamily,
-                          @Indexed String percentageSuggestedToFriendsFamily, @NonNull @Searchable String text,
-                          @Indexed(schemaFieldType = SchemaFieldType.VECTOR,
-                                  algorithm = VectorField.VectorAlgorithm.HNSW, type = VectorType.FLOAT32,
-                                  dimension = 3072, distanceMetric = DistanceMetric.COSINE,
-                                  initialCapacity = 10) byte[] embedding) {
+public class MovieEntity {
+    @Id
+    @Searchable
+    private String movieTitle;
+    @Indexed
+    @Searchable
+    private String genre;
+    @Indexed
+    private String releaseYear;
+    @Indexed
+    private String averageRating;
+    @Indexed
+    private String numberOfReviews;
+    @Indexed
+    @Searchable
+    private List<String> reviewHighlights;
+    @Indexed
+    private String minuteOfLifeChangingInsight;
+    @Indexed
+    private String howDiscovered;
+    @Indexed
+    private String meaningfulAdviceTaken;
+    @Indexed
+    private String isSuggestedToFriendsFamily;
+    @Indexed
+    private String percentageSuggestedToFriendsFamily;
+    @NonNull
+    @Searchable
+    private String text;
+    @Indexed(schemaFieldType = SchemaFieldType.VECTOR,
+             algorithm = VectorField.VectorAlgorithm.HNSW, type = VectorType.FLOAT32,
+             dimension = 3072, distanceMetric = DistanceMetric.COSINE,
+             initialCapacity = 10)
+    private byte[] embedding;
+
+    // Add constructors, getters, setters, etc. (Lombok can help)
 }
