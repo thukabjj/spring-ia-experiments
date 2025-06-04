@@ -1,6 +1,8 @@
 package com.techisthoughts.ia.movieclassification.repository.entity;
 
 import java.util.List;
+
+import lombok.Builder;
 import org.springframework.data.annotation.Id;
 import org.springframework.lang.NonNull;
 import com.redis.om.spring.annotations.Document;
@@ -18,6 +20,7 @@ import redis.clients.jedis.search.schemafields.VectorField;
 
 
 @Data
+@Builder
 @NoArgsConstructor
 @AllArgsConstructor
 @Document
@@ -49,12 +52,12 @@ public class MovieEntity {
     private String percentageSuggestedToFriendsFamily;
     @NonNull
     @Searchable
-    private String text;
+    private String embeddedText;
     @Indexed(schemaFieldType = SchemaFieldType.VECTOR,
              algorithm = VectorField.VectorAlgorithm.HNSW, type = VectorType.FLOAT32,
              dimension = 3072, distanceMetric = DistanceMetric.COSINE,
              initialCapacity = 10)
     private byte[] embedding;
 
-    // Add constructors, getters, setters, etc. (Lombok can help)
+
 }

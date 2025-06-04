@@ -4,17 +4,13 @@ import java.util.List;
 import java.util.stream.Collectors;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.core.io.ClassPathResource;
 import org.springframework.stereotype.Service;
 import com.redis.om.spring.search.stream.EntityStream;
-import com.redis.om.spring.search.stream.SearchStream;
-import com.redis.om.spring.tuple.Fields;
-import com.redis.om.spring.tuple.Pair;
 import com.redis.om.spring.vectorize.Embedder;
 import com.techisthoughts.ia.movieclassification.controller.MovieResponse;
-import com.techisthoughts.ia.movieclassification.controller.MovieSearchResponse;
 import com.techisthoughts.ia.movieclassification.repository.MovieRepository;
 import com.techisthoughts.ia.movieclassification.repository.entity.MovieEntity;
-import com.techisthoughts.ia.movieclassification.repository.entity.MovieEntity$;
 
 
 @Service
@@ -37,7 +33,7 @@ public class MovieService {
         this.entityStream = entityStream;
     }
 
-    public void loadMovieData(String filePath) {
+    public void loadMovieData(ClassPathResource filePath) {
         LOG.info("Loading movie data from file: {}", filePath);
         List<Movie> records = fileService.readMoviesFromCsv(filePath);
 
@@ -77,18 +73,18 @@ public class MovieService {
                 movieEntity.getPercentageSuggestedToFriendsFamily());
     }
 
-    public List<MovieSearchResponse> search(byte[] embedding) {
-        LOG.info("Received utterance: {}", embedding);
-        SearchStream<MovieEntity> stream = entityStream.of(MovieEntity.class);
-        List<Pair<MovieEntity, Double>> textsAndScores =
-                stream.filter(MovieEntity$.EMBEDDED_TEXT.knn(3, embedding))
-                        .sorted(MovieEntity$._EMBEDDED_TEXT_SCORE)
-                        .map(Fields.of(MovieEntity$._THIS, MovieEntity$._EMBEDDED_TEXT_SCORE))
-                        .collect(Collectors.toList());
-
-        return textsAndScores.stream()
-                .map(pair -> new MovieSearchResponse(pair.getFirst().getText(), pair.getSecond()))
-                .toList();
-    }
+//    public List<MovieSearchResponse> search(byte[] embedding) {
+//        LOG.info("Received utterance: {}", embedding);
+//        SearchStream<MovieEntity> stream = entityStream.of(MovieEntity.class);
+//        List<Pair<MovieEntity, Double>> textsAndScores =
+//                stream.filter(MovieEntity$.EMBEDDED_TEXT)
+//                        .sorted(MovieEntity$._EMBEDDED_TEXT_SCORE)
+//                        .map(Fields.of(MovieEntity$._THIS, MovieEntity$._EMBEDDED_TEXT_SCORE))
+//                        .collect(Collectors.toList());
+//
+//        return textsAndScores.stream()
+//                .map(pair -> new MovieSearchResponse(pair.getFirst().getEmbeddedText(), pair.getSecond()))
+//                .toList();
+//    }
 }
 

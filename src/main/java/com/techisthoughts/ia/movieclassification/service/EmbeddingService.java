@@ -75,7 +75,7 @@ public class EmbeddingService {
             float[] vectorValues = embeddings.get(j).getOutput();
             byte[] embeddingBytes = convertToBytes(vectorValues);
 
-            LOG.debug("Generated embedding for movie: '{}'. Vector length: {}. Byte array length: {}", record.movieTitle(), vectorValues.length, embeddingBytes.length);
+            LOG.debug("Generated embedding for movie: '{}'. Vector length: {}. Byte array length: {}", record.getMovieTitle(), vectorValues.length, embeddingBytes.length);
 
             batchEntities.add(createMovieEntity(record, textEmbedded, embeddingBytes));
         }
@@ -84,17 +84,17 @@ public class EmbeddingService {
 
     private MovieEntity createMovieEntity(Movie record, String textEmbedded, byte[] embeddingBytes) {
         return new MovieEntity(
-                record.movieTitle(),
-                record.genre(),
-                record.releaseYear(),
-                record.averageRating(),
-                record.numberOfReviews(),
-                record.reviewHighlights(),
-                record.minuteOfLifeChangingInsight(),
-                record.howDiscovered(),
-                record.meaningfulAdviceTaken(),
-                record.isSuggestedToFriendsFamily(),
-                record.percentageSuggestedToFriendsFamily(),
+                record.getMovieTitle(),
+                record.getGenre(),
+                record.getReleaseYear(),
+                record.getAverageRating(),
+                record.getNumberOfReviews(),
+                record.getReviewHighlights(),
+                record.getMinuteOfLifeChangingInsight(),
+                record.getHowDiscovered(),
+                record.getMeaningfulAdviceTaken(),
+                record.getIsSuggestedToFriendsFamily(),
+                record.getPercentageSuggestedToFriendsFamily(),
                 textEmbedded,
                 embeddingBytes
         );
@@ -114,17 +114,17 @@ public class EmbeddingService {
     private String createTextForEmbedding(Movie record) {
         return String.format(
                 "Title: %s. Genre: %s. Release Year: %s. Average Rating: %s. Number of Reviews: %s. Highlights: %s. Insight Minute: %s. Discovered Via: %s. Advice Taken: %s. Suggested to Others: %s (%s%%).",
-                record.movieTitle(),
-                record.genre(),
-                record.releaseYear(),
-                record.averageRating(),
-                record.numberOfReviews(),
-                record.reviewHighlights(),
-                record.minuteOfLifeChangingInsight(),
-                record.howDiscovered(),
-                record.meaningfulAdviceTaken(),
-                record.isSuggestedToFriendsFamily(),
-                record.percentageSuggestedToFriendsFamily()
+                record.getMovieTitle(),
+                record.getGenre(),
+                record.getReleaseYear(),
+                record.getAverageRating(),
+                record.getNumberOfReviews(),
+                record.getReviewHighlights(),
+                record.getMinuteOfLifeChangingInsight(),
+                record.getHowDiscovered(),
+                record.getMeaningfulAdviceTaken(),
+                record.getIsSuggestedToFriendsFamily(),
+                record.getPercentageSuggestedToFriendsFamily()
         );
     }
 }

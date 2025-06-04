@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project xmlns="http://maven.apache.org/POM/4.0.0"
-    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
 
     <!-- Project Information -->
@@ -52,6 +53,7 @@
             <artifactId>spring-boot-starter-actuator</artifactId>
         </dependency>
 
+
         <!-- Spring Boot Development & Configuration -->
         <dependency>
             <groupId>org.springframework.boot</groupId>
@@ -81,7 +83,11 @@
             <artifactId>redis-om-spring</artifactId>
             <version>${redis-om.version}</version>
         </dependency>
-
+        <dependency>
+            <groupId>com.redis.om</groupId>
+            <artifactId>redis-om-spring-ai</artifactId>
+            <version>${redis-om.version}</version>
+        </dependency>
         <!-- Utilities -->
         <dependency>
             <groupId>com.opencsv</groupId>
@@ -198,4 +204,24 @@
             </plugin>
         </plugins>
     </build>
+    <!-- Profiles for Native DNS Resolver -->
+    <profiles>
+        <!-- MacOS Native DNS Resolver -->
+        <profile>
+            <id>netty-resolver-dns-native-macos-aarch64</id>
+            <activation>
+                <os>
+                    <family>mac</family>
+                    <arch>aarch64</arch>
+                </os>
+            </activation>
+            <dependencies>
+                <dependency>
+                    <groupId>io.netty</groupId>
+                    <artifactId>netty-resolver-dns-native-macos</artifactId>
+                    <classifier>osx-aarch_64</classifier>
+                </dependency>
+            </dependencies>
+        </profile>
+    </profiles>
 </project>
