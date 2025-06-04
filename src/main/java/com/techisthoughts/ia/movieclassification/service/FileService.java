@@ -4,6 +4,7 @@ import com.opencsv.bean.CsvToBean;
 import com.opencsv.bean.CsvToBeanBuilder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.core.io.ClassPathResource;
 import org.springframework.stereotype.Service;
 
 import java.io.FileReader;
@@ -16,11 +17,16 @@ public class FileService {
 
     private static final Logger LOG = LoggerFactory.getLogger(FileService.class);
 
-    public List<Movie> readMoviesFromCsv(String filePath) {
-        try (Reader reader = new FileReader(filePath)) {
+    public List<Movie> readMoviesFromCsv(ClassPathResource filePath) {
+        LOG.info("Reading movie data from CSV file: {}", filePath.getPath());
+        if (!filePath.exists()) {
+            LOG.error("CSV file not found: {}", filePath.getPath());
+            return Collections.emptyList();
+        }
+        // Use try-with-resources to ensure the reader is closed properly
+        try (Reader reader = new FileReader(filePath.getFile())) {
             CsvToBean<Movie> csvToBean = new CsvToBeanBuilder<Movie>(reader)
                     .withType(Movie.class)
-                    .withIgnoreLeadingWhiteSpace(true)
                     .build();
 
             List<Movie> records = csvToBean.parse();

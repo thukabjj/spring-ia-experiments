@@ -8,38 +8,47 @@ import com.techisthoughts.ia.movieclassification.converter.ReviewHighlightsConve
 
 import java.util.List;
 
-public record Movie(
+import lombok.Builder;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+import lombok.AllArgsConstructor;
+
+@Data
+@Builder
+@NoArgsConstructor
+@AllArgsConstructor
+public class Movie {
+
         @CsvBindByName(column = "Movie Title")
-        String movieTitle,
+        private String movieTitle;
 
         @CsvBindByName(column = "Genre")
-        String genre,
+        private String genre;
 
         @CsvBindByName(column = "Release Year")
-        String releaseYear,
+        private String releaseYear;
 
         @CsvBindByName(column = "Average Rating")
-        String averageRating,
+        private String averageRating;
 
         @CsvBindByName(column = "Number of Reviews")
-        String numberOfReviews,
+        private String numberOfReviews;
 
         @CsvCustomBindByName(column = "Review Highlights", converter = ReviewHighlightsConverter.class)
-        List<String> reviewHighlights,
+        private List<String> reviewHighlights;
 
         @CsvBindByName(column = "Minute of Life-Changing Insight")
-        String minuteOfLifeChangingInsight,
+        private String minuteOfLifeChangingInsight;
 
         @CsvBindByName(column = "How Discovered")
-        String howDiscovered,
+        private String howDiscovered;
 
         @CsvBindByName(column = "Meaningful Advice Taken")
-        String meaningfulAdviceTaken,
+        private String meaningfulAdviceTaken;
 
         @CsvCustomBindByName(column = "Suggested to Friends/Family (Y/N %)", converter = IsSuggestedToFriendsFamilyConverter.class)
-        String isSuggestedToFriendsFamily,
+        private String isSuggestedToFriendsFamily;
 
         @CsvCustomBindByName(column = "Suggested to Friends/Family (Y/N %)", converter = PercentageSuggestedToFriendsFamilyConverter.class)
-        String percentageSuggestedToFriendsFamily
-) {
+        private String percentageSuggestedToFriendsFamily;
 }

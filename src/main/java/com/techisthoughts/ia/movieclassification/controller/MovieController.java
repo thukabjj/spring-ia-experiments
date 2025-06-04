@@ -1,7 +1,10 @@
 package com.techisthoughts.ia.movieclassification.controller;
 
 
-import com.techisthoughts.ia.movieclassification.service.MovieService;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.ai.chat.client.ChatClient;
@@ -10,11 +13,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
-
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.stream.Collectors;
+import com.techisthoughts.ia.movieclassification.service.MovieService;
 
 
 @RestController
@@ -54,6 +53,7 @@ public class MovieController {
         LOG.info("Fetched {} movies", movies.size());
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
+
 
     @GetMapping("/chat")
     public String chat(@RequestParam String message) {
