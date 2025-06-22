@@ -1,100 +1,302 @@
-# Spring AI with Ollama
+# 🎬 Movie Classification System
 
-This project is an experimentation of Spring AI (Artificial Intelligence) with Ollama, using the [Netflix Life Impact Dataset](https://www.kaggle.com/datasets/towhid121/netflix-life-impact-dataset-nlid/data) from Kaggle.
+[![Java](https://img.shields.io/badge/Java-21+-orange.svg)](https://openjdk.java.net/)
+[![Spring Boot](https://img.shields.io/badge/Spring%20Boot-3.x-brightgreen.svg)](https://spring.io/projects/spring-boot)
+[![Docker](https://img.shields.io/badge/Docker-Ready-blue.svg)](https://www.docker.com/)
+[![License](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
 
-The application demonstrates how to use Spring Boot, Spring AI, Ollama, and Redis to perform intelligent movie data processing, embedding, and querying. It exposes a REST API for interacting with processed movie data and includes observability tooling for monitoring.
+> A sophisticated **Spring Boot RAG (Retrieval-Augmented Generation)** system that leverages AI models to provide intelligent movie analysis, semantic search, and personalized recommendations using the Netflix Life Impact Dataset.
+
+## 🎯 What is This?
+
+The Movie Classification System demonstrates the power of combining traditional data processing with modern AI capabilities:
+
+- **🤖 AI-Powered**: Uses Ollama for embeddings generation and natural language processing
+- **🔍 Semantic Search**: Goes beyond keyword matching to understand meaning and context
+- **💬 Question Answering**: Ask natural language questions about movies and get intelligent responses
+- **🏗️ Clean Architecture**: Domain-driven design with hexagonal architecture principles
+- **📊 Observable**: Complete monitoring stack with LGTM (Loki, Grafana, Tempo, Metrics)
+
+## 🚀 Quick Start
+
+### Prerequisites
+- **Java 21+** and **Maven 3.8+**
+- **Docker & Docker Compose** for infrastructure
+- **8GB+ RAM** (recommended for AI models)
+
+### 5-Minute Setup
+
+```bash
+# 1. Clone and navigate
+git clone <repository-url>
+cd movie-classification
+
+# 2. Start infrastructure services
+docker compose up -d
+
+# 3. Install and setup Ollama
+brew install ollama  # macOS
+ollama serve
+ollama pull llama2
+ollama pull nomic-embed-text
+
+# 4. Build and run the application
+mvn clean install
+mvn spring-boot:run
+
+# 5. Verify everything works
+curl http://localhost:8080/api/health
+```
+
+## 🎪 Try It Out
+
+### Movie Discovery
+```bash
+# Search for action movies
+curl "http://localhost:8080/api/movies/search?genre=Action&limit=5"
+
+# Get specific movie details
+curl "http://localhost:8080/api/movies/The%20Matrix"
+```
+
+### AI-Powered Search
+```bash
+# Semantic search using vector embeddings
+curl -X POST http://localhost:8080/api/movies/search/embedding \
+  -H "Content-Type: application/json" \
+  -d '{"query": "space adventure with heroes", "limit": 5}'
+```
+
+### Question Answering
+```bash
+# Ask natural language questions
+curl -X POST http://localhost:8080/api/rag/ask \
+  -H "Content-Type: application/json" \
+  -d '{"question": "What are the best family-friendly sci-fi movies?"}'
+```
+
+## 🏗️ Architecture Overview
+
+```
+┌─────────────────┐    ┌─────────────────┐    ┌─────────────────┐
+│   Presentation  │    │   Application   │    │  Infrastructure │
+│     Layer       │────│     Layer       │────│     Layer       │
+└─────────────────┘    └─────────────────┘    └─────────────────┘
+        │                       │                       │
+    Controllers            Use Cases              Adapters & Config
+    DTOs & REST           Services               Database & External APIs
+```
+
+### Clean Architecture Benefits
+- **🎯 Domain-Driven**: Business logic isolated from technical concerns
+- **🔄 Testable**: Easy unit testing with clear boundaries
+- **🔧 Flexible**: Swap implementations without changing business logic
+- **📈 Scalable**: Well-organized code that grows maintainably
+
+## 🛠️ Technology Stack
+
+### Backend & Framework
+- **Java 21** - Modern language features and performance
+- **Spring Boot 3.x** - Production-ready application framework
+- **Spring AI** - AI integration abstractions and tooling
+- **Maven** - Dependency management and build automation
+
+### AI & Machine Learning
+- **Ollama** - Local AI model serving platform
+- **Vector Embeddings** - Semantic search capabilities
+- **RAG Architecture** - Retrieval-augmented generation for intelligent responses
+
+### Data & Storage
+- **Redis** - Vector database for embeddings and caching
+- **CSV Processing** - Netflix Life Impact Dataset ingestion
+- **In-Memory Repository** - Fast development and testing
+
+### Observability (LGTM Stack)
+- **Loki** - Log aggregation and analysis
+- **Grafana** - Visualization dashboards and alerting
+- **Tempo** - Distributed tracing
+- **Micrometer** - Application metrics and monitoring
+
+### Infrastructure
+- **Docker Compose** - Local development environment
+- **Prometheus** - Metrics collection and storage
+
+## 📊 Dataset: Netflix Life Impact Dataset (NLID)
+
+Rich movie metadata including:
+- **Basic Info**: Title, genre, runtime, release year
+- **User Engagement**: View counts, completion rates, ratings
+- **Content Analysis**: Review highlights, emotional impact scores
+- **Social Metrics**: Friend/family recommendation percentages
+- **8,800+ Movies** with comprehensive metadata for AI analysis
+
+## 🎯 Key Features
+
+### 🎬 For Movie Enthusiasts
+- **Intelligent Discovery**: Find movies based on preferences and mood
+- **Semantic Search**: Search by plot, themes, or emotional tone
+- **Smart Recommendations**: AI-powered suggestions beyond simple ratings
+- **Natural Questions**: "What are uplifting movies for a bad day?"
+
+### 👩‍💻 For Developers
+- **Reference Architecture**: Clean, well-documented hexagonal architecture
+- **AI Integration**: Practical example of AI in enterprise applications
+- **Comprehensive Testing**: Unit, integration, and end-to-end test strategies
+- **Production Ready**: Observability, health checks, and metrics
+
+### 🚀 For DevOps
+- **Container Ready**: Docker and Docker Compose configurations
+- **Monitoring**: Complete LGTM observability stack
+- **Health Checks**: Comprehensive system health and diagnostics
+- **Scalable Design**: Ready for horizontal scaling and cloud deployment
+
+## 📋 API Endpoints
+
+| Endpoint | Method | Description |
+|----------|--------|-------------|
+| `/api/movies/search` | GET | Search movies with filters |
+| `/api/movies/{title}` | GET | Get specific movie details |
+| `/api/movies/search/embedding` | POST | Semantic vector search |
+| `/api/rag/ask` | POST | Natural language Q&A |
+| `/api/rag/chat` | POST | Multi-turn conversations |
+| `/api/health` | GET | System health check |
+| `/api/metrics` | GET | Performance metrics |
+
+## 📊 Monitoring Dashboards
+
+Access your monitoring stack:
+
+| Service | URL | Purpose |
+|---------|-----|---------|
+| **Application** | http://localhost:8080 | Main API endpoints |
+| **Grafana** | http://localhost:3000 | Dashboards & visualization |
+| **Prometheus** | http://localhost:9090 | Metrics collection |
+| **Redis Insight** | http://localhost:8001 | Database management |
+
+*Default Grafana credentials: admin/admin*
+
+## 🧪 Testing & Quality
+
+```bash
+# Run all tests
+mvn test
+
+# Integration tests with test scripts
+./test-rag-capabilities.sh
+
+# Performance testing
+./test-scenarios.sh
+
+# Check test results
+ls test-results/
+```
+
+## 📚 Documentation
+
+Comprehensive documentation available in `/docs`:
+
+- **[📋 Project Overview](./docs/01-project-overview.md)** - System purpose and capabilities
+- **[🚀 Quick Start](./docs/02-quick-start.md)** - Get running in 10 minutes
+- **[🔌 API Documentation](./docs/06-api-documentation.md)** - Complete API reference
+- **[🏗️ Architecture](./docs/05-architecture.md)** - System design and patterns
+- **[💻 Development Guide](./docs/09-development-guide.md)** - For contributors and developers
+- **[🔍 Troubleshooting](./docs/15-troubleshooting.md)** - Common issues and solutions
+- **[❓ FAQ](./docs/20-faq.md)** - Frequently asked questions
+
+## 🔧 Configuration
+
+Key configuration options in `application.properties`:
+
+```properties
+# AI Model Configuration
+ollama.model.chat=llama2
+ollama.model.embedding=nomic-embed-text
+
+# Processing Settings
+app.processing.batch-size=50
+app.search.default-limit=20
+app.search.max-limit=100
+
+# Performance Tuning
+app.processing.async-enabled=true
+app.processing.thread-pool-size=4
+```
+
+## 🚨 Common Issues & Solutions
+
+### Ollama Connection Issues
+```bash
+# Check Ollama status
+curl http://localhost:11434/api/version
+
+# Restart if needed
+ollama serve
+```
+
+### Memory Issues
+```bash
+# Increase JVM memory
+export MAVEN_OPTS="-Xmx4g -Xms2g"
+mvn spring-boot:run
+```
+
+### Port Conflicts
+```bash
+# Use different port
+echo "server.port=8081" >> application.properties
+```
+
+More solutions in [Troubleshooting Guide](./docs/15-troubleshooting.md).
+
+## 🔮 Roadmap
+
+### Phase 1: Foundation ✅
+- Clean architecture implementation
+- Basic RAG functionality
+- Observability stack
+- Core API endpoints
+
+### Phase 2: Enhancement (In Progress)
+- 🔐 Security implementation (authentication, authorization)
+- ⚡ Performance optimization (caching, async processing)
+- 🧪 Comprehensive testing (unit, integration, e2e)
+- 📖 API documentation (OpenAPI/Swagger)
+
+### Phase 3: Production Ready (Planned)
+- 🚀 Cloud deployment guides
+- 🔄 CI/CD pipeline setup
+- 📊 Advanced analytics dashboard
+- 🌐 Multi-tenant support
+
+## 🤝 Contributing
+
+We welcome contributions! Areas where you can help:
+
+- **🔐 Security**: Implement authentication and authorization
+- **⚡ Performance**: Optimize search and processing speeds
+- **🧪 Testing**: Add more comprehensive test coverage
+- **📖 Documentation**: Improve guides and examples
+- **🎨 UI**: Create a web interface for the API
+- **🤖 AI**: Integrate additional AI models and capabilities
+
+## 📄 License
+
+This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
+
+## 🙏 Acknowledgments
+
+- **Spring AI Team** - For excellent AI integration framework
+- **Ollama Project** - For making local AI accessible
+- **Netflix** - For inspiring the movie classification use case
+- **Clean Architecture Community** - For architectural guidance
 
 ---
 
-## Features
+## 🆘 Need Help?
 
-- REST API with Spring Boot to expose endpoints for movie data and chat-based AI.
-- Reads and parses movie data from a CSV file (Netflix Life Impact Dataset).
-- Uses Spring AI and Ollama for movie classification and chat interaction.
-- Embeds movie data as vectors using Ollama's embedding model and stores in Redis (vector store).
-- Logging and monitoring of processed movie records and service health.
-- Pre-built endpoints for:
-  - Fetching all movies: `/movies`
-  - Chatting with an AI assistant: `/chat?message=your-query`
+- 📖 **Documentation**: Check the comprehensive [docs](./docs) directory
+- 🐛 **Issues**: Review [Troubleshooting Guide](./docs/15-troubleshooting.md)
+- ❓ **Questions**: See [FAQ](./docs/20-faq.md)
+- 💬 **Discussion**: Create an issue for questions or improvements
 
----
-
-## Requirements
-
-- Java 21+
-- Maven 3.8+
-- [Ollama](https://ollama.com/) (for AI model integration)
-- Redis (required if using vector store features)
-- Docker (for running containers such as Redis, Grafana, Prometheus, etc.)
-
----
-
-## Setup
-
-1. **Run containers** (Redis, Grafana, Prometheus, etc.)
-
-   ```bash
-   docker compose up
-   ```
-
-2. **Build the project:**
-
-   ```bash
-   mvn clean install
-   ```
-
-3. **Run the application:**
-
-   ```bash
-   mvn spring-boot:run
-   ```
-
----
-
-## Example Usage
-
-- After starting the application, it will automatically load and process the `NLID.csv` dataset.
-- Access movie data via:
-  ```
-  GET http://localhost:8080/movies
-  ```
-- Chat with the AI assistant via:
-  ```
-  GET http://localhost:8080/chat?message=Tell me about a movie that changed lives.
-  ```
-
----
-
-## Access the Services
-
-- **Grafana:** [http://localhost:3000](http://localhost:3000) (admin/admin)
-- **Prometheus:** [http://localhost:9090](http://localhost:9090)
-- **Loki:** [http://localhost:3100](http://localhost:3100)
-- **Tempo:** [http://localhost:3200](http://localhost:3200)
-- **Redis:** [http://localhost:6379](http://localhost:6379)
-- **RedisInsight (bundled):** [http://localhost:8001](http://localhost:8001)
-
----
-
-## Project Structure
-
-- `src/main/java/com/techisthoughts/ia/movieclassification/`
-  - `controller/` - REST endpoints for movies and chat
-  - `service/` - Business logic for data loading, embedding, and querying
-  - `repository/` - Repository layer using Redis as a vector store
-  - `llm/` - Large Language Model configuration
-
----
-
-## Dataset
-
-- The [Netflix Life Impact Dataset](https://www.kaggle.com/datasets/towhid121/netflix-life-impact-dataset-nlid/data) (`NLID.csv`) is required in the classpath for movie data loading.
-- The application reads the CSV file, creates vector embeddings, and saves them in Redis for semantic search and querying.
-
----
-
-## License
-
-This project is for experimentation and educational purposes. Please refer to the Kaggle dataset license for dataset usage terms.
-
----
+**Happy Movie Discovering! 🍿**

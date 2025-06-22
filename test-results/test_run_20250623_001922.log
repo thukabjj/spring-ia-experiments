@@ -1,0 +1,24 @@
+2025-06-23 00:19:22 - [0;34m=== STARTING COMPREHENSIVE TEST SUITE ===[0m
+2025-06-23 00:19:22 - Results will be saved to: test-results
+2025-06-23 00:19:22 - Log file: test-results/test_run_20250623_001922.log
+2025-06-23 00:19:23 - [0;32mService is available. Starting tests...[0m
+2025-06-23 00:19:23 - [0;35m=== OBSERVABILITY TESTS ===[0m
+2025-06-23 00:19:24 - [0;34mTesting: Health Check[0m
+2025-06-23 00:19:24 - URL: GET http://localhost:8588/api/observability/health
+2025-06-23 00:19:25 - [0;32m✓ SUCCESS[0m - .834661000s - Status: 200
+2025-06-23 00:19:25 - [0;34mTesting: Comprehensive Metrics[0m
+2025-06-23 00:19:25 - URL: GET http://localhost:8588/api/observability/metrics
+2025-06-23 00:19:25 - [0;32m✓ SUCCESS[0m - .027793000s - Status: 200
+2025-06-23 00:19:25 - [0;34mTesting: Token Analytics[0m
+2025-06-23 00:19:25 - URL: GET http://localhost:8588/api/observability/tokens
+2025-06-23 00:19:25 - [0;32m✓ SUCCESS[0m - .027787000s - Status: 200
+2025-06-23 00:19:25 - [0;34mTesting: Performance Analytics[0m
+2025-06-23 00:19:25 - URL: GET http://localhost:8588/api/observability/performance
+2025-06-23 00:19:25 - [0;32m✓ SUCCESS[0m - .030043000s - Status: 200
+2025-06-23 00:19:25 - [0;34mTesting: Cache Analytics[0m
+2025-06-23 00:19:25 - URL: GET http://localhost:8588/api/observability/cache
+2025-06-23 00:19:25 - [0;32m✓ SUCCESS[0m - .026224000s - Status: 200
+2025-06-23 00:19:25 - [0;34mTesting: Error Analytics[0m
+2025-06-23 00:19:25 - URL: GET http://localhost:8588/api/observability/errors
+2025-06-23 00:19:25 - [0;31m✗ FAILED[0m - .033133000s - Status: 500
+2025-06-23 00:19:25 - Response: 

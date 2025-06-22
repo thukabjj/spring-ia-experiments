@@ -1,17 +1,14 @@
 package com.techisthoughts.ia.movieclassification;
 
-import com.redis.om.spring.annotations.EnableRedisDocumentRepositories;
-import com.techisthoughts.ia.movieclassification.service.MovieService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.Bean;
-import org.springframework.core.io.ClassPathResource;
+import com.techisthoughts.ia.movieclassification.infrastructure.adapter.CsvMovieLoader;
 
 @SpringBootApplication
-@EnableRedisDocumentRepositories(basePackages = "com.techisthoughts.ia.movieclassification.repository")
 public class MovieClassificationApplication {
 
     private final Logger LOG = LoggerFactory.getLogger(MovieClassificationApplication.class);
@@ -21,13 +18,12 @@ public class MovieClassificationApplication {
     }
 
     @Bean
-    CommandLineRunner loadData(MovieService movieService) {
+    CommandLineRunner loadData(CsvMovieLoader csvMovieLoader) {
         return args -> {
-            // Load movie data from CSV file using ClassPathResource
-            ClassPathResource classPathResource = new ClassPathResource("NLID.csv");
-            movieService.loadMovieData(classPathResource);
-            // Load data or perform any startup tasks here
-            LOG.info("Application started successfully!");
+            // Load movie data from CSV file on startup
+            LOG.info("Loading movie data from CSV...");
+            int loadedCount = csvMovieLoader.loadMoviesFromCsv();
+            LOG.info("Application started successfully! Loaded {} movies", loadedCount);
         };
     }
 }
