@@ -72,7 +72,7 @@
 git clone git@github.com:thukabjj/spring-ia-experiments.git
 cd movie-classification
 
-# 2️⃣ Start infrastructure services
+# 2️⃣ Start infrastructure services (monitoring only)
 docker compose up -d
 
 # 3️⃣ Install and setup Ollama
@@ -240,7 +240,7 @@ graph TB
 |---------|-------------|---------|
 | **🎯 Domain-Driven** | Business logic isolated from technical concerns | Easy to understand and modify business rules |
 | **🔄 Testable** | Clear boundaries enable comprehensive testing | 85%+ code coverage with unit & integration tests |
-| **🔧 Flexible** | Swap implementations without changing business logic | Easy to switch from in-memory to Redis/PostgreSQL |
+| **🔧 Flexible** | Swap implementations without changing business logic | Easy to switch from in-memory to external databases |
 | **📈 Scalable** | Well-organized code that grows maintainably | Ready for microservices architecture |
 
 ---
@@ -261,7 +261,7 @@ graph TB
 [![Nomic](https://img.shields.io/badge/Nomic-Embed%20Text-green?style=for-the-badge)](https://www.nomic.ai/)
 
 ### 💾 **Data & Storage**
-[![Redis](https://img.shields.io/badge/Redis-Vector%20DB-red?style=for-the-badge&logo=redis)](https://redis.io/)
+[![In-Memory](https://img.shields.io/badge/In--Memory-Vector%20DB-blue?style=for-the-badge)](https://en.wikipedia.org/wiki/In-memory_database)
 [![CSV](https://img.shields.io/badge/CSV-Processing-blue?style=for-the-badge)](https://en.wikipedia.org/wiki/Comma-separated_values)
 
 ### 📊 **Observability (LGTM Stack)**
@@ -403,7 +403,6 @@ Meaningful Advice Taken,Suggested to Friends/Family (Y/N %)
 | **🎬 Application** | [localhost:8585](http://localhost:8585) | Main API & Dashboard | N/A |
 | **📊 Grafana** | [localhost:3000](http://localhost:3000) | Visualization & Alerts | admin/admin |
 | **🔍 Prometheus** | [localhost:9090](http://localhost:9090) | Metrics Collection | N/A |
-| **💾 Redis Insight** | [localhost:8001](http://localhost:8001) | Database Management | N/A |
 | **📝 Loki** | [localhost:3100](http://localhost:3100) | Log Aggregation | N/A |
 
 </div>
@@ -506,12 +505,6 @@ app.processing.default-questions-per-chunk=5
 # 💾 Data Configuration
 app.movie.data.file=NLID.csv
 
-# 🔴 Redis Configuration
-spring.data.redis.host=localhost
-spring.data.redis.port=6379
-spring.data.redis.timeout=5000ms
-spring.data.redis.lettuce.pool.max-active=8
-
 # 📊 Observability
 management.endpoints.web.exposure.include=health,info,metrics,prometheus
 management.endpoint.health.show-details=always
@@ -528,10 +521,6 @@ export OLLAMA_EMBEDDING_MODEL=nomic-embed-text
 # Performance
 export EMBEDDING_BATCH_SIZE=20
 export SEARCH_DEFAULT_LIMIT=50
-
-# Infrastructure
-export REDIS_HOST=localhost
-export REDIS_PORT=6379
 
 # Observability
 export TRACING_SAMPLING_PROBABILITY=1.0
@@ -591,7 +580,7 @@ curl http://localhost:8585/api/movies/stats
 
 ### 🐳 **Docker Issues**
 ```bash
-# Restart infrastructure services
+# Restart monitoring services
 docker compose down && docker compose up -d
 
 # Check service status
@@ -616,7 +605,7 @@ docker compose logs grafana
 # Build application image
 docker build -t movie-classification:latest .
 
-# Run with Docker Compose
+# Run with Docker Compose (monitoring only)
 docker compose -f docker-compose.prod.yml up -d
 ```
 
@@ -687,7 +676,7 @@ spec:
   - [ ] Role-based authorization
   - [ ] API key management
 - [ ] ⚡ **Performance Optimization**
-  - [ ] Redis caching layer
+  - [ ] External database integration
   - [ ] Async processing
   - [ ] Connection pooling
 - [ ] 🧪 **Advanced Testing**
