@@ -22,13 +22,13 @@ The Movie Classification System demonstrates the power of combining traditional 
 ### Prerequisites
 - **Java 21+** and **Maven 3.8+**
 - **Docker & Docker Compose** for infrastructure
-- **8GB+ RAM** (recommended for AI models)
+- **4GB+ RAM** (recommended for AI models)
 
 ### 5-Minute Setup
 
 ```bash
 # 1. Clone and navigate
-git clone <repository-url>
+git clone git@github.com:thukabjj/spring-ia-experiments.git
 cd movie-classification
 
 # 2. Start infrastructure services
@@ -37,7 +37,7 @@ docker compose up -d
 # 3. Install and setup Ollama
 brew install ollama  # macOS
 ollama serve
-ollama pull llama2
+ollama pull llama3.1:8b
 ollama pull nomic-embed-text
 
 # 4. Build and run the application
@@ -45,34 +45,47 @@ mvn clean install
 mvn spring-boot:run
 
 # 5. Verify everything works
-curl http://localhost:8080/api/health
+curl http://localhost:8585/api/movies/health
 ```
 
 ## 🎪 Try It Out
 
 ### Movie Discovery
 ```bash
-# Search for action movies
-curl "http://localhost:8080/api/movies/search?genre=Action&limit=5"
+# Load movies from CSV first
+curl -X POST http://localhost:8585/api/movies/load
+
+# Search for movies with vector similarity
+curl "http://localhost:8585/api/movies/search?query=action%20adventure&limit=5"
 
 # Get specific movie details
-curl "http://localhost:8080/api/movies/The%20Matrix"
+curl "http://localhost:8585/api/movies/The%20Matrix"
+
+# Get all movies
+curl http://localhost:8585/api/movies
 ```
 
-### AI-Powered Search
+### AI-Powered RAG Search
 ```bash
-# Semantic search using vector embeddings
-curl -X POST http://localhost:8080/api/movies/search/embedding \
+# Simple RAG query
+curl "http://localhost:8585/api/rag/ask?q=What%20are%20the%20best%20family%20movies&limit=5"
+
+# Advanced RAG query with full pipeline
+curl -X POST http://localhost:8585/api/rag/query \
   -H "Content-Type: application/json" \
-  -d '{"query": "space adventure with heroes", "limit": 5}'
+  -d '{"query": "recommend uplifting movies for difficult times", "limit": 5, "responseStyle": "detailed"}'
 ```
 
-### Question Answering
+### System Monitoring
 ```bash
-# Ask natural language questions
-curl -X POST http://localhost:8080/api/rag/ask \
-  -H "Content-Type: application/json" \
-  -d '{"question": "What are the best family-friendly sci-fi movies?"}'
+# Check system health
+curl http://localhost:8585/api/observability/health
+
+# Get detailed metrics
+curl http://localhost:8585/api/observability/metrics
+
+# View performance analytics
+curl http://localhost:8585/api/observability/performance
 ```
 
 ## 🏗️ Architecture Overview
@@ -103,7 +116,7 @@ curl -X POST http://localhost:8080/api/rag/ask \
 
 ### AI & Machine Learning
 - **Ollama** - Local AI model serving platform
-- **Vector Embeddings** - Semantic search capabilities
+- **Vector Embeddings** - Semantic search capabilities with nomic-embed-text
 - **RAG Architecture** - Retrieval-augmented generation for intelligent responses
 
 ### Data & Storage
@@ -128,7 +141,7 @@ Rich movie metadata including:
 - **User Engagement**: View counts, completion rates, ratings
 - **Content Analysis**: Review highlights, emotional impact scores
 - **Social Metrics**: Friend/family recommendation percentages
-- **8,800+ Movies** with comprehensive metadata for AI analysis
+- **82+ Movies** with comprehensive metadata for AI analysis
 
 ## 🎯 Key Features
 
@@ -154,13 +167,19 @@ Rich movie metadata including:
 
 | Endpoint | Method | Description |
 |----------|--------|-------------|
-| `/api/movies/search` | GET | Search movies with filters |
+| `/api/movies` | GET | Get all movies |
 | `/api/movies/{title}` | GET | Get specific movie details |
-| `/api/movies/search/embedding` | POST | Semantic vector search |
-| `/api/rag/ask` | POST | Natural language Q&A |
-| `/api/rag/chat` | POST | Multi-turn conversations |
-| `/api/health` | GET | System health check |
-| `/api/metrics` | GET | Performance metrics |
+| `/api/movies/load` | POST | Load movies from CSV file |
+| `/api/movies/search` | GET | Vector similarity search |
+| `/api/movies/process` | POST | Process movies with chunking |
+| `/api/movies/health` | GET | Movie service health check |
+| `/api/movies/stats` | GET | Movie statistics |
+| `/api/rag/ask` | GET | Simple RAG query |
+| `/api/rag/query` | POST | Advanced RAG with full pipeline |
+| `/api/rag/capabilities` | GET | RAG system capabilities |
+| `/api/observability/health` | GET | System health check |
+| `/api/observability/metrics` | GET | Detailed system metrics |
+| `/api/observability/performance` | GET | Performance analytics |
 
 ## 📊 Monitoring Dashboards
 
@@ -168,7 +187,7 @@ Access your monitoring stack:
 
 | Service | URL | Purpose |
 |---------|-----|---------|
-| **Application** | http://localhost:8080 | Main API endpoints |
+| **Application** | http://localhost:8585 | Main API endpoints |
 | **Grafana** | http://localhost:3000 | Dashboards & visualization |
 | **Prometheus** | http://localhost:9090 | Metrics collection |
 | **Redis Insight** | http://localhost:8001 | Database management |
@@ -208,18 +227,27 @@ Comprehensive documentation available in `/docs`:
 Key configuration options in `application.properties`:
 
 ```properties
+# Server Configuration
+server.port=8585
+spring.application.name=movie-classification
+
 # AI Model Configuration
-ollama.model.chat=llama2
-ollama.model.embedding=nomic-embed-text
+spring.ai.ollama.chat.model=llama3.1:8b
+spring.ai.ollama.embedding.model=nomic-embed-text
+spring.ai.ollama.base-url=http://localhost:11434
 
 # Processing Settings
-app.processing.batch-size=50
-app.search.default-limit=20
-app.search.max-limit=100
+app.embedding.batch-size=20
+app.search.default-limit=50
+app.search.max-limit=200
+app.chunking.default-chunk-size=5
 
-# Performance Tuning
-app.processing.async-enabled=true
-app.processing.thread-pool-size=4
+# Data Configuration
+app.movie.data.file=NLID.csv
+
+# Redis Configuration
+spring.data.redis.host=localhost
+spring.data.redis.port=6379
 ```
 
 ## 🚨 Common Issues & Solutions
@@ -243,7 +271,16 @@ mvn spring-boot:run
 ### Port Conflicts
 ```bash
 # Use different port
-echo "server.port=8081" >> application.properties
+echo "server.port=8586" >> application.properties
+```
+
+### Dataset Loading Issues
+```bash
+# Verify CSV file exists
+ls -la src/main/resources/NLID.csv
+
+# Load movies manually
+curl -X POST http://localhost:8585/api/movies/load
 ```
 
 More solutions in [Troubleshooting Guide](./docs/15-troubleshooting.md).
