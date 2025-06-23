@@ -43,7 +43,8 @@
 - **⚡ Ultra-Fast Processing**: 0.5-1.5s response time with intelligent caching
 - **📊 Complete Observability**: LGTM stack (Loki, Grafana, Tempo, Metrics)
 - **🔄 Multiple LLM Adapters**: Blocking, Optimized, Ultra-Fast, and Lightning modes
-- **🎨 Beautiful Web Interface**: Real-time dashboard with performance analytics
+- **🎨 Modern Frontend**: Next.js 14 with TypeScript, Tailwind CSS, and real-time monitoring
+- **🏗️ Full-Stack Architecture**: Spring Boot backend + Next.js frontend with comprehensive API integration
 - **🧪 Production-Ready**: Comprehensive testing, monitoring, and error handling
 
 ---
@@ -81,17 +82,25 @@ ollama serve
 ollama pull llama3.1:8b
 ollama pull nomic-embed-text
 
-# 4️⃣ Build and run the application
+# 4️⃣ Build and run the backend
 mvn clean install
 mvn spring-boot:run
 
-# 5️⃣ Verify everything works
+# 5️⃣ Start the frontend (in a new terminal)
+cd movie-classification-frontend
+npm install
+npm run dev
+
+# 6️⃣ Verify everything works
 curl http://localhost:8585/api/movies/health
 ```
 
 <div align="center">
 
-🎉 **That's it!** Your Movie Classification System is now running at [http://localhost:8585](http://localhost:8585)
+🎉 **That's it!** Your Movie Classification System is now running at:
+
+- **Backend API**: [http://localhost:8585](http://localhost:8585)
+- **Frontend Dashboard**: [http://localhost:3000](http://localhost:3000)
 
 </div>
 
@@ -250,23 +259,35 @@ graph TB
 <div align="center">
 
 ### 🔧 **Backend & Framework**
+
 [![Java](https://img.shields.io/badge/Java-21-orange?style=for-the-badge&logo=java)](https://openjdk.java.net/)
 [![Spring Boot](https://img.shields.io/badge/Spring%20Boot-3.x-brightgreen?style=for-the-badge&logo=spring)](https://spring.io/projects/spring-boot)
 [![Spring AI](https://img.shields.io/badge/Spring%20AI-Latest-blue?style=for-the-badge&logo=spring)](https://spring.io/projects/spring-ai)
 [![Maven](https://img.shields.io/badge/Maven-3.8+-red?style=for-the-badge&logo=apache-maven)](https://maven.apache.org/)
 
+### 🎨 **Frontend & UI**
+
+[![Next.js](https://img.shields.io/badge/Next.js-14-black?style=for-the-badge&logo=next.js)](https://nextjs.org/)
+[![TypeScript](https://img.shields.io/badge/TypeScript-5.x-blue?style=for-the-badge&logo=typescript)](https://www.typescriptlang.org/)
+[![React](https://img.shields.io/badge/React-18-blue?style=for-the-badge&logo=react)](https://reactjs.org/)
+[![Tailwind CSS](https://img.shields.io/badge/Tailwind%20CSS-3.x-blue?style=for-the-badge&logo=tailwind-css)](https://tailwindcss.com/)
+[![Shadcn/ui](https://img.shields.io/badge/Shadcn/ui-Latest-black?style=for-the-badge)](https://ui.shadcn.com/)
+
 ### 🤖 **AI & Machine Learning**
+
 [![Ollama](https://img.shields.io/badge/Ollama-Local%20AI-purple?style=for-the-badge)](https://ollama.com/)
 [![LLaMA](https://img.shields.io/badge/LLaMA-3.1:8b-yellow?style=for-the-badge)](https://llama.meta.com/)
 [![Nomic](https://img.shields.io/badge/Nomic-Embed%20Text-green?style=for-the-badge)](https://www.nomic.ai/)
 
 ### 💾 **Data & Storage**
+
 [![In-Memory](https://img.shields.io/badge/In--Memory-Vector%20DB-blue?style=for-the-badge)](https://en.wikipedia.org/wiki/In-memory_database)
 [![CSV](https://img.shields.io/badge/CSV-Processing-blue?style=for-the-badge)](https://en.wikipedia.org/wiki/Comma-separated_values)
 
 ### 📊 **Observability (LGTM Stack)**
+
 [![Loki](https://img.shields.io/badge/Loki-Logs-orange?style=for-the-badge&logo=grafana)](https://grafana.com/oss/loki/)
-[![Grafana](https://img.shields.io/badge/Grafana-Dashboards-orange?style=for-the-badge&logo=grafana)](https://grafana.com/)
+[![Grafana](https://img.shields.io/badge/Grafana-Dashboards-orange?style=for-the-badge&logo=grafana)](https://grafana.com/oss/tempo/)
 [![Tempo](https://img.shields.io/badge/Tempo-Tracing-purple?style=for-the-badge&logo=grafana)](https://grafana.com/oss/tempo/)
 [![Prometheus](https://img.shields.io/badge/Prometheus-Metrics-red?style=for-the-badge&logo=prometheus)](https://prometheus.io/)
 
@@ -329,22 +350,27 @@ Meaningful Advice Taken,Suggested to Friends/Family (Y/N %)
 <div align="center">
 
 ### 🎬 **For Movie Enthusiasts**
+
 | Feature | Description | Example |
 |---------|-------------|---------|
+| **🎨 Modern Interface** | Beautiful Next.js dashboard with real-time updates | Interactive charts, responsive design, dark/light mode |
 | **🔍 Intelligent Discovery** | Find movies based on mood and preferences | "Show me uplifting movies for tough times" |
 | **🧠 Semantic Search** | Search by themes, not just keywords | "space adventure with heroes" → Star Wars, Guardians |
 | **💡 Smart Recommendations** | AI-powered suggestions beyond ratings | Based on viewing history and emotional resonance |
 | **❓ Natural Questions** | Conversational movie discovery | "What movies helped people through depression?" |
 
 ### 👩‍💻 **For Developers**
+
 | Feature | Description | Benefit |
 |---------|-------------|---------|
+| **⚛️ Modern Frontend Stack** | Next.js 14, TypeScript, Tailwind CSS | Learn cutting-edge frontend development |
 | **🏗️ Reference Architecture** | Clean, hexagonal architecture | Easy to understand and extend |
 | **🤖 AI Integration** | Practical enterprise AI example | Learn modern AI implementation patterns |
 | **🧪 Comprehensive Testing** | Unit, integration, and E2E tests | High confidence in code changes |
 | **📊 Production Monitoring** | Complete observability stack | Real-world production practices |
 
 ### 🚀 **For DevOps**
+
 | Feature | Description | Value |
 |---------|-------------|-------|
 | **🐳 Container Ready** | Docker and Docker Compose | One-command deployment |
@@ -362,6 +388,7 @@ Meaningful Advice Taken,Suggested to Friends/Family (Y/N %)
 <summary>🔍 Click to expand full API documentation</summary>
 
 ### 🎬 **Movie Operations**
+
 | Endpoint | Method | Description | Example |
 |----------|--------|-------------|---------|
 | `/api/movies` | GET | Get all movies | `curl http://localhost:8585/api/movies` |
@@ -373,6 +400,7 @@ Meaningful Advice Taken,Suggested to Friends/Family (Y/N %)
 | `/api/movies/stats` | GET | Movie statistics | `curl http://localhost:8585/api/movies/stats` |
 
 ### 🤖 **RAG Operations**
+
 | Endpoint | Method | Description | Example |
 |----------|--------|-------------|---------|
 | `/api/rag/ask` | GET | Simple RAG query | `curl "http://localhost:8585/api/rag/ask?q=best%20family%20movies"` |
@@ -380,6 +408,7 @@ Meaningful Advice Taken,Suggested to Friends/Family (Y/N %)
 | `/api/rag/capabilities` | GET | RAG system capabilities | `curl http://localhost:8585/api/rag/capabilities` |
 
 ### 📊 **Observability**
+
 | Endpoint | Method | Description | Example |
 |----------|--------|-------------|---------|
 | `/api/observability/health` | GET | System health check | `curl http://localhost:8585/api/observability/health` |
@@ -400,8 +429,9 @@ Meaningful Advice Taken,Suggested to Friends/Family (Y/N %)
 
 | Service | URL | Purpose | Credentials |
 |---------|-----|---------|-------------|
-| **🎬 Application** | [localhost:8585](http://localhost:8585) | Main API & Dashboard | N/A |
-| **📊 Grafana** | [localhost:3000](http://localhost:3000) | Visualization & Alerts | admin/admin |
+| **🎨 Frontend Dashboard** | [localhost:3000](http://localhost:3000) | Modern React UI & Analytics | N/A |
+| **🎬 Backend API** | [localhost:8585](http://localhost:8585) | REST API & Documentation | N/A |
+| **📊 Grafana** | [localhost:3001](http://localhost:3001) | Visualization & Alerts | admin/admin |
 | **🔍 Prometheus** | [localhost:9090](http://localhost:9090) | Metrics Collection | N/A |
 | **📝 Loki** | [localhost:3100](http://localhost:3100) | Log Aggregation | N/A |
 
@@ -536,6 +566,7 @@ export TRACING_SAMPLING_PROBABILITY=1.0
 <summary>🔧 Common Issues & Solutions</summary>
 
 ### 🤖 **Ollama Connection Issues**
+
 ```bash
 # Check Ollama status
 curl http://localhost:11434/api/version
@@ -548,6 +579,7 @@ ollama list
 ```
 
 ### 💾 **Memory Issues**
+
 ```bash
 # Increase JVM memory
 export MAVEN_OPTS="-Xmx4g -Xms2g"
@@ -558,6 +590,7 @@ curl http://localhost:8585/api/observability/metrics | jq '.system'
 ```
 
 ### 🔌 **Port Conflicts**
+
 ```bash
 # Use different port
 echo "server.port=8586" >> application.properties
@@ -567,6 +600,7 @@ lsof -i :8585
 ```
 
 ### 📊 **Dataset Loading Issues**
+
 ```bash
 # Verify CSV file exists
 ls -la src/main/resources/NLID.csv
@@ -579,6 +613,7 @@ curl http://localhost:8585/api/movies/stats
 ```
 
 ### 🐳 **Docker Issues**
+
 ```bash
 # Restart monitoring services
 docker compose down && docker compose up -d
@@ -612,6 +647,7 @@ docker compose -f docker-compose.prod.yml up -d
 ### ☁️ **Cloud Deployment**
 
 #### **AWS ECS**
+
 ```bash
 # Create ECS task definition
 aws ecs register-task-definition --cli-input-json file://task-definition.json
@@ -621,6 +657,7 @@ aws ecs update-service --cluster movie-cluster --service movie-service
 ```
 
 #### **Kubernetes**
+
 ```yaml
 apiVersion: apps/v1
 kind: Deployment
@@ -664,13 +701,17 @@ spec:
 </div>
 
 #### **Phase 1: Foundation** ✅
+
 - [x] Clean architecture implementation
 - [x] Basic RAG functionality
 - [x] Observability stack
 - [x] Core API endpoints
-- [x] Web dashboard interface
+- [x] Modern Next.js frontend with TypeScript
+- [x] Real-time dashboard with performance analytics
+- [x] Comprehensive API integration
 
 #### **Phase 2: Enhancement** 🔄 *In Progress*
+
 - [ ] 🔐 **Security Implementation**
   - [ ] JWT authentication
   - [ ] Role-based authorization
@@ -689,6 +730,7 @@ spec:
   - [ ] SDK generation
 
 #### **Phase 3: Production Ready** 📅 *Planned*
+
 - [ ] 🚀 **Cloud Deployment**
   - [ ] Kubernetes manifests
   - [ ] Helm charts
@@ -707,6 +749,7 @@ spec:
   - [ ] White-label solutions
 
 #### **Phase 4: Enterprise** 🏢 *Future*
+
 - [ ] 🤖 **Advanced AI Features**
   - [ ] Multiple LLM support (GPT, Claude, Gemini)
   - [ ] Fine-tuned models
@@ -738,23 +781,25 @@ spec:
 
 | Area | Skills Needed | Impact |
 |------|---------------|--------|
+| **🎨 Frontend Development** | Next.js, React, TypeScript, Tailwind CSS | High |
 | **🔐 Security** | Spring Security, JWT, OAuth2 | High |
 | **⚡ Performance** | Caching, Async processing, JVM tuning | High |
-| **🧪 Testing** | JUnit, TestContainers, Integration testing | Medium |
+| **🧪 Testing** | JUnit, Jest, TestContainers, Playwright | Medium |
 | **📖 Documentation** | Technical writing, Markdown | Medium |
-| **🎨 Frontend** | React, Vue, Angular, HTML/CSS | Medium |
 | **🤖 AI/ML** | LLM integration, Vector databases | High |
 | **☁️ DevOps** | Docker, Kubernetes, CI/CD | High |
-| **🐛 Bug Fixes** | Java, Spring Boot, Debugging | Low-Medium |
+| **🐛 Bug Fixes** | Java, Spring Boot, React, Debugging | Low-Medium |
 
 ### 📝 **Contribution Process**
 
 1. **🍴 Fork the Repository**
+
    ```bash
    git fork git@github.com:thukabjj/spring-ia-experiments.git
    ```
 
 2. **🌿 Create a Feature Branch**
+
    ```bash
    git checkout -b feature/amazing-feature
    ```
@@ -765,17 +810,20 @@ spec:
    - Update documentation as needed
 
 4. **✅ Test Your Changes**
+
    ```bash
    mvn clean test
    ./test-rag-capabilities.sh
    ```
 
 5. **📝 Commit Your Changes**
+
    ```bash
    git commit -m "feat: add amazing feature"
    ```
 
 6. **🚀 Push and Create PR**
+
    ```bash
    git push origin feature/amazing-feature
    ```
@@ -783,6 +831,7 @@ spec:
 ### 🏆 **Recognition**
 
 Contributors are recognized in our:
+
 - 📜 **Contributors section** (below)
 - 🎖️ **Annual contributor awards**
 - 💼 **LinkedIn recommendations**
